@@ -102,19 +102,10 @@ function render() {
     els.resultRows.appendChild(row);
   }
 
-  els.duplicateRows.innerHTML = "";
-  for (const duplicateRow of state.duplicatePriceSkcs) {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${escapeHtml(duplicateRow.skc ?? "")}</td>
-      <td>${escapeHtml(duplicateRow.occurrenceCount ?? "")}</td>
-      <td>${escapeHtml((duplicateRow.rowNumbers ?? []).join(", "))}</td>
-      <td>${escapeHtml((duplicateRow.rawQuotedPrices ?? []).join(", "))}</td>
-      <td>${escapeHtml(duplicateRow.selectedQuotedPrice ?? "")}</td>
-      <td>${escapeHtml((duplicateRow.selectedRowNumbers ?? []).join(", "))}</td>
-    `;
-    els.duplicateRows.appendChild(row);
-  }
+  els.duplicateRows.value = state.duplicatePriceSkcs
+    .map((duplicateRow) => String(duplicateRow.skc ?? "").trim())
+    .filter(Boolean)
+    .join("\n");
 
   els.log.innerHTML = "";
   for (const entry of state.log.slice(0, 80)) {

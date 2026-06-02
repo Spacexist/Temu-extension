@@ -165,6 +165,12 @@ textarea {
   margin-bottom: 8px;
 }
 
+.duplicate-skc-text {
+  min-height: 170px;
+  font-family: "Cascadia Code", Consolas, monospace;
+  white-space: pre;
+}
+
 .section-head {
   display: flex;
   justify-content: space-between;

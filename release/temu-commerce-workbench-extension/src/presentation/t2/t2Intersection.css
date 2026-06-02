@@ -11,7 +11,8 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -109,6 +110,18 @@ input[type="file"] {
   white-space: nowrap;
 }
 
+textarea {
+  width: 100%;
+  min-height: 92px;
+  padding: 8px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  color: #1f2933;
+  background: #fbfcfd;
+  resize: vertical;
+  line-height: 1.5;
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -140,6 +153,12 @@ input[type="file"] {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 8px;
+}
+
+.duplicate-skc-text {
+  min-height: 170px;
+  font-family: "Cascadia Code", Consolas, monospace;
+  white-space: pre;
 }
 
 .section-head {
