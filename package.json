@@ -1,0 +1,14 @@
+{
+  "name": "temu-commerce-workbench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Unified product queue workbench for T2 import, 1688 enrichment, pricing, image generation, and export.",
+  "scripts": {
+    "test": "node --test",
+    "package:extension": "node scripts/package-extension.mjs"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}
