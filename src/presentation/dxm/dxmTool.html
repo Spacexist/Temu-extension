@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>店小秘工具</title>
+    <link rel="stylesheet" href="./dxmTool.css">
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="avatar" aria-hidden="true">店</div>
+        <div>
+          <h1>店小秘工具</h1>
+          <p id="statusText">分类建议采集 / 数据搬家按数量选择</p>
+        </div>
+      </header>
+
+      <section class="band">
+        <div class="button-row">
+          <button id="collectBtn" type="button">采集分类建议</button>
+          <button id="copyBtn" type="button" class="secondary" disabled>复制结果</button>
+        </div>
+      </section>
+
+      <section class="band">
+        <label for="selectCountInput">店小秘选择数量</label>
+        <div class="inline-controls">
+          <input id="selectCountInput" type="number" min="1" step="1" value="100" inputmode="numeric">
+          <button id="selectCountBtn" type="button" class="success">按数量选择</button>
+        </div>
+      </section>
+
+      <section id="resultPreview" class="result-preview" aria-live="polite">
+        <div class="empty-state">采集结果会显示在这里</div>
+      </section>
+
+      <textarea id="plainTextOutput" class="sr-only" spellcheck="false"></textarea>
+
+      <section class="band log-band">
+        <h2>日志</h2>
+        <pre id="logOutput">暂无日志</pre>
+      </section>
+    </main>
+
+    <script type="module" src="./dxmTool.js"></script>
+  </body>
+</html>

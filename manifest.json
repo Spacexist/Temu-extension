@@ -9,7 +9,8 @@
     "scripting",
     "sidePanel",
     "storage",
-    "tabs"
+    "tabs",
+    "clipboardWrite"
   ],
   "host_permissions": [
     "*://detail.1688.com/*",
@@ -19,7 +20,19 @@
     "<all_urls>"
   ],
   "action": {
-    "default_title": "Temu 商品工作台"
+    "default_title": "Temu 商品工作台",
+    "default_icon": {
+      "16": "icons/avatar.svg",
+      "32": "icons/avatar.svg",
+      "48": "icons/avatar.svg",
+      "128": "icons/avatar.svg"
+    }
+  },
+  "icons": {
+    "16": "icons/avatar.svg",
+    "32": "icons/avatar.svg",
+    "48": "icons/avatar.svg",
+    "128": "icons/avatar.svg"
   },
   "background": {
     "service_worker": "src/presentation/background/background.js"

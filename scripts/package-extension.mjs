@@ -13,6 +13,7 @@ const packageRoot = path.join(releaseRoot, packageName);
 const runtimeEntries = [
   "manifest.json",
   "config.json",
+  "icons",
   "src",
   "node_modules/xlsx/dist/xlsx.full.min.js"
 ];
