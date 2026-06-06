@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Temu 商品工作台">
+  <defs>
+    <linearGradient id="bg" x1="18" y1="12" x2="112" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1f6fb2"/>
+      <stop offset="0.52" stop-color="#1a7f37"/>
+      <stop offset="1" stop-color="#0b3a75"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="24" y1="20" x2="96" y2="110" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="url(#bg)"/>
+  <path d="M30 20h48c17 0 31 14 31 31v48c0 5-4 9-9 9H52c-18 0-32-14-32-32V30c0-6 4-10 10-10Z" fill="url(#glow)"/>
+  <path d="M35 39h28c5 0 9 4 9 9v7H59v-5H35V39Zm0 23h50c5 0 9 4 9 9v21H80V76c0-3-2-5-5-5H35v-9Zm0 29h33v9H35v-9Z" fill="#fff"/>
+  <path d="M79 35h18v18h-9v-8h-9V35Zm18 58v18H79v-10h9v-8h9Z" fill="#fff" opacity="0.92"/>
+</svg>

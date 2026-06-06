@@ -6,6 +6,8 @@ const DOWNLOAD_DIR = "temu-gpt-main-images";
 
 const lastNotifyByTab = new Map();
 
+importScripts("./temuSplitBackground.js");
+
 function is1688DetailPage(url) {
   return DETAIL_URL_PATTERN.test(url || "");
 }

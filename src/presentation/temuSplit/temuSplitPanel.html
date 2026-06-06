@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Temu 分屏</title>
+    <link rel="stylesheet" href="./temuSplitPanel.css">
+  </head>
+  <body>
+    <main class="split-shell">
+      <header class="hero">
+        <div>
+          <h1>Temu 分屏采集</h1>
+          <p>复用真实详情标签，左侧列表不跳走，右侧详情页给店小秘采集。</p>
+        </div>
+        <div class="shortcut">Alt+W</div>
+      </header>
+
+      <section class="notice">
+        快捷键 <strong>Alt+W</strong>：随时开启或关闭商品点击拦截。
+      </section>
+
+      <section class="status-card" aria-label="分屏状态">
+        <div class="status-row">
+          <span>拦截状态</span>
+          <strong id="enabledStatus">读取中</strong>
+        </div>
+        <div class="status-row">
+          <span>详情标签</span>
+          <strong id="detailStatus">读取中</strong>
+        </div>
+        <div class="status-row">
+          <span>列表绑定</span>
+          <strong id="sourceStatus">读取中</strong>
+        </div>
+        <div class="status-row">
+          <span>Chrome 分屏</span>
+          <strong id="splitStatus">读取中</strong>
+        </div>
+      </section>
+
+      <section class="actions">
+        <button class="primary" id="toggleButton" type="button">切换拦截</button>
+        <button id="focusDetailButton" type="button">打开/定位详情标签</button>
+        <button id="bindSourceButton" type="button">绑定当前页为列表页</button>
+        <button id="bindDetailButton" type="button">绑定当前页为详情标签</button>
+        <button id="clearDetailButton" type="button">清除详情标签记录</button>
+      </section>
+
+      <p class="hint">
+        首次点击商品后，请把 Temu 列表标签和详情标签加入 Chrome 原生分屏。之后继续点列表商品，右侧详情标签会自动更新。
+      </p>
+
+      <div class="message" id="message" role="status" aria-live="polite"></div>
+
+      <section class="log-card" aria-label="快捷键与操作日志">
+        <div class="log-header">
+          <h2>日志</h2>
+          <button id="clearLogButton" type="button">清空</button>
+        </div>
+        <div id="logList" class="log-list">暂无日志</div>
+      </section>
+    </main>
+
+    <script src="./temuSplitPanel.js"></script>
+  </body>
+</html>
