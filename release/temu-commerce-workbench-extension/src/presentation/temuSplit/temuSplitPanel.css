@@ -1,0 +1,127 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 420px;
+  color: #1d252c;
+  background: #f6f7f8;
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+}
+
+button {
+  min-height: 36px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #1f2933;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+button.primary {
+  border-color: #f97316;
+  color: #fff;
+  background: #f97316;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.split-shell {
+  padding: 14px;
+}
+
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+h1 {
+  color: #1f2933;
+  font-size: 18px;
+}
+
+.hero p,
+.hint {
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.shortcut {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: #9a3412;
+  background: #ffedd5;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.notice,
+.status-card,
+.actions {
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.notice {
+  color: #623b00;
+  background: #fff7ec;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.status-card {
+  display: grid;
+  gap: 10px;
+  background: #f8fafc;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.status-row span {
+  color: #64748b;
+}
+
+.status-row strong {
+  color: #0f172a;
+  text-align: right;
+}
+
+.actions {
+  display: grid;
+  gap: 8px;
+}
+
+.message {
+  min-height: 18px;
+  margin-top: 10px;
+  color: #b45309;
+  font-size: 12px;
+  line-height: 1.4;
+}
