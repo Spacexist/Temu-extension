@@ -439,6 +439,18 @@ async function toggleEnabledByCommand() {
   const enabled = !state.enabled;
   await storageSet({ enabled });
   await notifyTemuTabsStatusChanged(enabled);
+  notifySplitPanelLog(`快捷键 Alt+W：${enabled ? "已开启" : "已关闭"}商品点击拦截。`);
+}
+
+function notifySplitPanelLog(text) {
+  try {
+    chrome.runtime.sendMessage({
+      type: "TEMU_SPLIT_LOG",
+      text
+    });
+  } catch (_error) {
+    // The side panel may be closed.
+  }
 }
 
 async function focusDetailTab() {
@@ -568,6 +580,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         const enabled = Boolean(message.enabled);
         await storageSet({ enabled });
         await notifyTemuTabsStatusChanged(enabled);
+        notifySplitPanelLog(`切换拦截状态：${enabled ? "已开启" : "已关闭"}。`);
         sendResponse({ ok: true, status: await getStatus(message.currentTabId ?? null) });
         break;
       }

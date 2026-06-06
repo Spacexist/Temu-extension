@@ -75,7 +75,8 @@ h1 {
 
 .notice,
 .status-card,
-.actions {
+.actions,
+.log-card {
   margin-bottom: 12px;
   padding: 12px;
   border: 1px solid #e5e7eb;
@@ -124,4 +125,46 @@ h1 {
   color: #b45309;
   font-size: 12px;
   line-height: 1.4;
+}
+
+.log-card {
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.log-header h2 {
+  margin: 0;
+  color: #1f2933;
+  font-size: 14px;
+}
+
+.log-header button {
+  min-height: 28px;
+  padding: 0 10px;
+  color: #64748b;
+  background: #f8fafc;
+  font-size: 12px;
+}
+
+.log-list {
+  max-height: 150px;
+  overflow: auto;
+  color: #475569;
+  font-family: Consolas, "SFMono-Regular", "Liberation Mono", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.log-entry {
+  padding: 4px 0;
+  border-bottom: 1px solid #eef1f4;
 }

@@ -239,6 +239,27 @@
     }
   }
 
+  async function handleShortcut(event) {
+    if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.code !== "KeyW") {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const nextEnabled = !enabled;
+    const response = await sendMessage({
+      type: "TEMU_SPLIT_SET_ENABLED",
+      enabled: nextEnabled
+    });
+
+    if (response.ok) {
+      enabled = Boolean(response.status?.enabled ?? nextEnabled);
+    } else if (extensionContextValid) {
+      showToast(response.error || "快捷键切换失败。", "error");
+    }
+  }
+
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.type === "STATUS_CHANGED") {
       enabled = Boolean(message.enabled);
@@ -262,4 +283,5 @@
   window.addEventListener("mousedown", expectNaturalDetailTab, true);
   window.addEventListener("message", handlePageMessage);
   window.addEventListener("click", handleClick, true);
+  window.addEventListener("keydown", handleShortcut, true);
 })();
