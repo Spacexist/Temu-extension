@@ -93,16 +93,6 @@
         "src/legacy/1688/preview_bridge.js"
       ],
       "run_at": "document_idle"
-    },
-    {
-      "matches": [
-        "https://chatgpt.com/*",
-        "https://chat.openai.com/*"
-      ],
-      "js": [
-        "src/legacy/gpt/contentScript.js"
-      ],
-      "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
@@ -117,7 +107,14 @@
         "src/legacy/1688/config.json",
         "src/legacy/gpt/dashboard.html",
         "src/legacy/gpt/dashboard.css",
-        "src/legacy/gpt/dashboard.js"
+        "src/legacy/gpt/dashboard.js",
+        "src/legacy/gpt/chatgptClient.js",
+        "src/legacy/gpt/downloadClient.js",
+        "src/legacy/gpt/queueEngine.js",
+        "src/legacy/gptDebug/sidepanel.html",
+        "src/legacy/gptDebug/sidepanel.css",
+        "src/legacy/gptDebug/sidepanel.js",
+        "src/legacy/gptDebug/contentScript.js"
       ],
       "matches": [
         "<all_urls>"

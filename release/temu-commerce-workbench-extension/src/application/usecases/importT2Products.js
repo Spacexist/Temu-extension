@@ -43,6 +43,20 @@ export function importT2Products({ infoRows, priceRows, mapping = DEFAULT_T2_MAP
   };
 }
 
+export function extractUniquePriceSkcText(priceRows) {
+  const seen = new Set();
+  const skcs = [];
+
+  for (const row of priceRows.slice(1)) {
+    const skc = normalizeSkc(cell(row, 1));
+    if (!skc || seen.has(skc)) continue;
+    seen.add(skc);
+    skcs.push(skc);
+  }
+
+  return skcs.join(",");
+}
+
 function loadPriceMapping(rows, mapping) {
   const recordsBySkc = new Map();
   for (const [index, row] of rows.slice(1).entries()) {

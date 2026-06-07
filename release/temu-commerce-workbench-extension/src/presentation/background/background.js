@@ -185,7 +185,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
 
-  if (message?.type === "downloadImage") {
+  if (message?.type === "downloadImage" || message?.type === "downloadImageData" || message?.type === "debug:downloadImageData") {
     downloadImage(message)
       .then((result) => sendResponse({ ok: true, result }))
       .catch((error) => sendResponse({ ok: false, error: String(error?.message || error) }));
@@ -196,13 +196,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 });
 
 async function downloadImage(message) {
-  if (!message.url) {
+  const url = message.imageDataUrl || message.url;
+  if (!url) {
     throw new Error("Missing image URL");
   }
 
   const filename = `${DOWNLOAD_DIR}/${sanitizeFilename(message.filename || "temu_main.png")}`;
   const downloadId = await chrome.downloads.download({
-    url: message.url,
+    url,
     filename,
     conflictAction: "uniquify",
     saveAs: false
