@@ -16,6 +16,7 @@ const els = {
   stopBtn: document.getElementById("stopBtn"),
   templateInput: document.getElementById("templateInput"),
   templateBtn: document.getElementById("templateBtn"),
+  cacheExcelBtn: document.getElementById("cacheExcelBtn"),
   folderInput: document.getElementById("folderInput"),
   folderBtn: document.getElementById("folderBtn"),
   prevBtn: document.getElementById("prevBtn"),
@@ -43,6 +44,7 @@ const state = {
   lastImageDataUrl: "",
   lastDiagnostics: null,
   excelFailures: [],
+  pendingExcel: null,
   busy: false
 };
 
@@ -64,6 +66,7 @@ function bindEvents() {
   els.stopBtn.addEventListener("click", () => runStep("stop", stopGpt));
   els.templateBtn.addEventListener("click", () => els.templateInput.click());
   els.templateInput.addEventListener("change", (event) => runStep("excel-cache", () => importExcelTemplate(event)));
+  els.cacheExcelBtn.addEventListener("click", () => runStep("excel-download", cachePendingExcelImages));
   els.folderBtn.addEventListener("click", () => runStep("choose-folder", chooseFolder));
   els.folderInput.addEventListener("change", onFolderSelected);
   els.prevBtn.addEventListener("click", () => moveIndex(-1));
@@ -101,13 +104,11 @@ async function importExcelTemplate(event) {
   if (!file) return;
 
   try {
-    if (!window.showDirectoryPicker) {
-      throw new Error("当前浏览器不支持选择缓存目录，无法下载 Excel URL 图片。");
-    }
-
     state.excelFailures = [];
+    state.pendingExcel = null;
     state.currentDataUrl = "";
     state.lastImageDataUrl = "";
+    state.files = [];
     els.resultPreview.textContent = "暂无生成图";
     log("info", `读取模板 Excel：${file.name}`);
 
@@ -120,11 +121,44 @@ async function importExcelTemplate(event) {
       throw new Error("模板中没有识别到可用的轮播图/产品素材图链接。");
     }
 
-    els.importStatus.textContent = `Excel：扫描 ${result.summary.rowsScanned} 行，去重后 ${items.length} 张，A 列重复跳过 ${result.summary.duplicateNameRowCount} 行。请选择图片缓存目录。`;
-    log("info", "请选择 Excel URL 图片缓存目录，插件会在里面新建子文件夹。");
+    state.pendingExcel = {
+      templateName: file.name,
+      items,
+      summary: result.summary
+    };
+    els.importStatus.textContent = `Excel 已读取：扫描 ${result.summary.rowsScanned} 行，去重后 ${items.length} 张，A 列重复跳过 ${result.summary.duplicateNameRowCount} 行。下一步点“选择保存文件夹并下载”。`;
+    log("ok", `Excel 已读取：去重后 ${items.length} 张。请点击“选择保存文件夹并下载”。`);
+    setDiagnostics({
+      ok: true,
+      phase: "excel-read",
+      summary: result.summary,
+      pendingCount: items.length
+    });
+    render();
+  } finally {
+    els.templateInput.value = "";
+  }
+}
 
-    const rootHandle = await window.showDirectoryPicker({ mode: "readwrite" });
-    const cacheFolderName = buildCacheFolderName(file.name);
+async function cachePendingExcelImages() {
+  if (!state.pendingExcel?.items?.length) {
+    throw new Error("请先导入模板 Excel。");
+  }
+  if (!window.showDirectoryPicker) {
+    throw new Error("当前浏览器不支持选择保存文件夹。");
+  }
+
+  const { items, summary, templateName } = state.pendingExcel;
+  state.excelFailures = [];
+  state.files = [];
+  state.currentDataUrl = "";
+  state.lastImageDataUrl = "";
+  els.resultPreview.textContent = "暂无生成图";
+  els.importStatus.textContent = "请选择保存文件夹，插件会在里面新建图片缓存子文件夹。";
+  log("info", "请选择保存文件夹，插件会在里面新建图片缓存子文件夹。");
+
+  const rootHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+  const cacheFolderName = buildCacheFolderName(templateName);
     const cacheHandle = await rootHandle.getDirectoryHandle(cacheFolderName, { create: true });
     const cachedItems = [];
 
@@ -171,25 +205,22 @@ async function importExcelTemplate(event) {
       }
     }
 
-    state.files = cachedItems;
-    state.index = 0;
-    els.importStatus.textContent = `Excel 缓存完成：成功 ${cachedItems.length} 张，失败 ${state.excelFailures.length} 张，目录 ${cacheFolderName}。成功项已自动载入调试队列。`;
-    setDiagnostics({
-      ok: true,
-      phase: "excel-cache",
-      summary: {
-        rowsScanned: result.summary.rowsScanned,
-        cachedCount: cachedItems.length,
-        failedCount: state.excelFailures.length,
-        cacheFolderName
-      },
-      failedListings: state.excelFailures
-    });
-    render();
-    await loadCurrentImagePreview();
-  } finally {
-    els.templateInput.value = "";
-  }
+  state.files = cachedItems;
+  state.index = 0;
+  els.importStatus.textContent = `Excel 缓存完成：成功 ${cachedItems.length} 张，失败 ${state.excelFailures.length} 张，目录 ${cacheFolderName}。成功项已自动载入调试队列。`;
+  setDiagnostics({
+    ok: true,
+    phase: "excel-download",
+    summary: {
+      rowsScanned: summary.rowsScanned,
+      cachedCount: cachedItems.length,
+      failedCount: state.excelFailures.length,
+      cacheFolderName
+    },
+    failedListings: state.excelFailures
+  });
+  render();
+  await loadCurrentImagePreview();
 }
 
 async function chooseFolder() {
@@ -492,7 +523,12 @@ function render() {
   if (!state.files.length) els.currentImage.textContent = "未选择图片";
   renderButtons();
 }
-function renderButtons() { document.querySelectorAll("button").forEach((button) => { button.disabled = state.busy && button.id !== "stopBtn"; }); }
+function renderButtons() {
+  document.querySelectorAll("button").forEach((button) => {
+    button.disabled = state.busy && button.id !== "stopBtn";
+  });
+  els.cacheExcelBtn.disabled = state.busy || !state.pendingExcel?.items?.length;
+}
 function log(kind, text) {
   const item = document.createElement("div"); item.className = `log-item ${kind}`;
   item.innerHTML = `<span class="log-time">${new Date().toLocaleTimeString("zh-CN", { hour12: false })}</span><span class="log-text">${escapeHtml(text)}</span>`;

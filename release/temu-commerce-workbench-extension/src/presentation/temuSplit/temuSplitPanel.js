@@ -102,9 +102,13 @@ function renderStatus(status) {
   currentStatus = status;
   enabledStatus.textContent = status.enabled ? "已开启" : "已关闭";
   detailStatus.textContent = status.hasDetailTab ? `已连接 #${status.detailTabId}` : "未创建";
-  sourceStatus.textContent = status.hasSourceTab ? `已绑定 #${status.sourceTabId}` : "未绑定";
+  sourceStatus.textContent = status.currentBlockedSellerCenter
+    ? "卖家中心禁用"
+    : (status.hasSourceTab ? `已绑定 #${status.sourceTabId}` : "未绑定");
 
-  if (status.sameSplitView) {
+  if (status.currentBlockedSellerCenter) {
+    splitStatus.textContent = "禁止拦截/采集";
+  } else if (status.sameSplitView) {
     splitStatus.textContent = "已检测到同组分屏";
   } else if (status.splitViewSupported) {
     splitStatus.textContent = "可检测，未同组";
@@ -114,6 +118,7 @@ function renderStatus(status) {
 
   toggleButton.textContent = status.enabled ? "关闭商品点击拦截" : "开启商品点击拦截";
   focusDetailButton.disabled = !status.hasDetailTab && !status.lastDetailUrl;
+  bindSourceButton.disabled = Boolean(status.currentBlockedSellerCenter);
 }
 
 async function refreshStatus() {
@@ -146,7 +151,7 @@ async function runAction(action) {
     await action();
   } finally {
     toggleButton.disabled = false;
-    bindSourceButton.disabled = false;
+    bindSourceButton.disabled = Boolean(currentStatus?.currentBlockedSellerCenter);
     bindDetailButton.disabled = false;
     clearDetailButton.disabled = false;
     await refreshStatus();

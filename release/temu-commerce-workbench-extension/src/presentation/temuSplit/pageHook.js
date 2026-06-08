@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  if (window.__temuSplitCollectorPageHookInstalled) return;
+  if (window.__temuSplitCollectorPageHookInstalled || isForbiddenSellerCenterUrl(window.location.href)) return;
   window.__temuSplitCollectorPageHookInstalled = true;
 
   const SOURCE = "temu-split-collector";
@@ -13,6 +13,17 @@
     try {
       const { hostname } = new URL(url, window.location.href);
       return hostname === "temu.com" || hostname.endsWith(".temu.com");
+    } catch {
+      return false;
+    }
+  }
+
+  function isForbiddenSellerCenterUrl(url) {
+    try {
+      const parsed = new URL(url, window.location.href);
+      const hostname = parsed.hostname.toLowerCase();
+      return hostname === "seller.kuajingmaihuo.com"
+        || (hostname.endsWith(".temu.com") && hostname.includes("seller"));
     } catch {
       return false;
     }
@@ -55,6 +66,7 @@
   }
 
   function captureDetailUrl(url) {
+    if (isForbiddenSellerCenterUrl(window.location.href) || isForbiddenSellerCenterUrl(url)) return false;
     if (!url || !isProductDetailUrl(url)) return false;
 
     const normalized = normalizeUrl(url);

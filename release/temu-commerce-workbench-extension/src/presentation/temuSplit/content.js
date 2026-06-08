@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  if (window.top !== window || window.__temuSplitCollectorInstalled) return;
+  if (window.top !== window || window.__temuSplitCollectorInstalled || isForbiddenSellerCenterUrl(window.location.href)) return;
   window.__temuSplitCollectorInstalled = true;
 
   const MESSAGE_SOURCE = "temu-split-collector";
@@ -60,6 +60,17 @@
     try {
       const { hostname } = new URL(url, window.location.href);
       return hostname === "temu.com" || hostname.endsWith(".temu.com");
+    } catch {
+      return false;
+    }
+  }
+
+  function isForbiddenSellerCenterUrl(url) {
+    try {
+      const parsed = new URL(url, window.location.href);
+      const hostname = parsed.hostname.toLowerCase();
+      return hostname === "seller.kuajingmaihuo.com"
+        || (hostname.endsWith(".temu.com") && hostname.includes("seller"));
     } catch {
       return false;
     }
@@ -178,6 +189,7 @@
   }
 
   function shouldHandleEvent(event) {
+    if (isForbiddenSellerCenterUrl(window.location.href)) return false;
     return enabled && isProbablyListPage() && isPlainLeftClick(event) && !isIgnoredControl(event.target);
   }
 
