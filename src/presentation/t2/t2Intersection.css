@@ -88,10 +88,38 @@ input[type="file"] {
 
 .table-picker input[type="file"] {
   min-height: 38px;
-  padding: 6px 8px;
+  padding: 5px 8px 5px 5px;
   border: 1px dashed var(--card-edge);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  border-radius: var(--radius-md);
+  color: var(--muted);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 249, 0.94), rgba(250, 246, 239, 0.94)),
+    var(--surface);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.table-picker input[type="file"]::file-selector-button {
+  min-height: 28px;
+  margin-right: 10px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+  box-shadow: 0 5px 12px rgba(184, 86, 45, 0.18);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.table-picker input[type="file"]:hover {
+  border-color: rgba(184, 86, 45, 0.55);
+  background: #fffaf3;
+}
+
+.table-picker input[type="file"]:hover::file-selector-button {
+  box-shadow: 0 7px 16px rgba(184, 86, 45, 0.24);
 }
 
 #processButton {
