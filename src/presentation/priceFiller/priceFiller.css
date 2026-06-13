@@ -1,0 +1,164 @@
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+.price-filler {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+}
+
+.header {
+  padding: 16px;
+  border: 1px solid rgba(184, 86, 45, 0.18);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(184, 86, 45, 0.16), rgba(47, 111, 98, 0.10)),
+    var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.header h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.header p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.card {
+  padding: 14px;
+}
+
+.warning-banner {
+  display: none;
+  padding: 12px 14px;
+  border: 1px solid rgba(196, 132, 29, 0.30);
+  border-radius: var(--radius-md);
+  background: rgba(196, 132, 29, 0.10);
+}
+
+.warning-banner.show {
+  display: block;
+}
+
+.warning-banner p {
+  margin: 0;
+  color: #8a5a0a;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.config-row span {
+  flex: 0 0 auto;
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.config-row input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  text-align: center;
+}
+
+.formula {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px dashed var(--card-edge);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  background: var(--surface);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.formula strong {
+  color: var(--brand);
+}
+
+.btn {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.log-header,
+.status-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.log-header {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.status-line {
+  justify-content: flex-start;
+  margin-top: 9px;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.log-box {
+  height: 220px;
+  margin-top: 10px;
+  overflow-y: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.log-line {
+  color: var(--muted);
+}
+
+.log-line.success {
+  color: var(--success);
+}
+
+.log-line.warn {
+  color: var(--warning);
+}
+
+.log-line.error {
+  color: var(--danger);
+}
+
+.log-line.info {
+  color: var(--info);
+}
+
+.log-line.done {
+  color: var(--accent);
+  font-weight: 800;
+}

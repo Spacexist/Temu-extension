@@ -22,7 +22,8 @@
     try {
       const parsed = new URL(url, window.location.href);
       const hostname = parsed.hostname.toLowerCase();
-      return hostname === "seller.kuajingmaihuo.com"
+      return hostname === "ads.temu.com"
+        || hostname === "seller.kuajingmaihuo.com"
         || (hostname.endsWith(".temu.com") && hostname.includes("seller"));
     } catch {
       return false;

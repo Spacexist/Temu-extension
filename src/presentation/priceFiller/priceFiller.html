@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>建议零售价填写</title>
+    <link rel="stylesheet" href="/src/shared/theme.css">
+    <link rel="stylesheet" href="./priceFiller.css">
+  </head>
+  <body>
+    <main class="price-filler">
+      <header class="header">
+        <h1>建议零售价填写</h1>
+        <p>读取当前页日常价格范围最大值，乘以系数后填入建议零售价。</p>
+      </header>
+
+      <section id="warning" class="warning-banner">
+        <p>当前页不是支持的 Temu 后台，请打开建议零售价合规中心页面。</p>
+      </section>
+
+      <section class="card">
+        <label class="config-row">
+          <span>系数</span>
+          <input type="number" id="coefficient" value="1.2" step="0.1" min="0.01">
+        </label>
+
+        <p class="formula">建议零售价 = 日常价格范围最大值 × <strong id="formulaCoeff">1.2</strong></p>
+
+        <button class="btn btn-primary" id="startBtn" type="button">开始填写当前页</button>
+      </section>
+
+      <section class="card">
+        <div class="log-header">
+          <span>执行日志</span>
+          <span id="statusCount">0 / 0</span>
+        </div>
+        <div class="status-line">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">就绪</span>
+        </div>
+        <div class="log-box" id="logBox">
+          <div class="log-line info">等待执行...</div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./priceFiller.js"></script>
+  </body>
+</html>

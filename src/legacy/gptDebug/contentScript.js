@@ -8,7 +8,8 @@
     busy: false,
     cancelled: false,
     baselineImageKeys: [],
-    lastUserMessageCount: 0
+    lastUserMessageCount: 0,
+    lastPromptUserIndex: -1
   };
   state.busy = false;
   state.cancelled = false;
@@ -77,6 +78,7 @@
     const composer = await waitForComposer(message.timeoutMs || 30000);
     state.baselineImageKeys = collectImageKeys();
     state.lastUserMessageCount = getUserMessages().length;
+    state.lastPromptUserIndex = state.lastUserMessageCount;
     await focusAndSetText(composer, prompt);
     await waitForPromptApplied(composer, prompt);
     const sendButton = await waitForSendButton(message.timeoutMs || 30000);
@@ -93,7 +95,8 @@
 
   async function detectImage(message) {
     const started = Date.now();
-    const image = await waitForNewImage(message.timeoutMs || 420000);
+    const candidate = await waitForNewImage(message.timeoutMs || 420000, message.ignoreResponseKeys || []);
+    const image = candidate.img;
     const imageDataUrl = await imageToDataUrl(image);
     return {
       ok: true,
@@ -101,10 +104,13 @@
       operationId: message.operationId || "",
       elapsedMs: Date.now() - started,
       imageDataUrl,
+      responseKey: candidate.responseKey,
       width: image.naturalWidth || 0,
       height: image.naturalHeight || 0,
       diagnostics: {
         imageKey: getImageKey(image),
+        responseKey: candidate.responseKey,
+        reason: candidate.reason,
         current: collectDiagnostics()
       }
     };
@@ -165,10 +171,11 @@
     return { attached: false, reason: "attachment_timeout", before, after };
   }
 
-  async function waitForNewImage(timeoutMs) {
+  async function waitForNewImage(timeoutMs, ignoreResponseKeys = []) {
     const started = Date.now();
     let found = null;
     let stableSince = 0;
+    const ignored = new Set(ignoreResponseKeys.filter(Boolean));
     while (Date.now() - started < timeoutMs) {
       throwIfCancelled();
       const limitText = findLatestAssistantLimitText();
@@ -178,10 +185,10 @@
           current: collectDiagnostics()
         });
       }
-      const image = newestGeneratedImage();
-      if (image) {
-        if (getImageKey(image) === getImageKey(found)) stableSince = stableSince || Date.now();
-        else { found = image; stableSince = Date.now(); }
+      const candidate = newestGeneratedImage(ignored);
+      if (candidate) {
+        if (candidate.responseKey === found?.responseKey) stableSince = stableSince || Date.now();
+        else { found = candidate; stableSince = Date.now(); }
       }
       if (found && Date.now() - stableSince > 900) return found;
       await delay(500);
@@ -190,21 +197,97 @@
     throw makeError("detectImage", "等待生成图片超时", collectDiagnostics());
   }
 
-  function newestGeneratedImage() {
+  function newestGeneratedImage(ignoreResponseKeys = new Set()) {
     const baseline = new Set(state.baselineImageKeys || []);
     const assistantNodes = getAssistantMessagesAfterLastPrompt();
-    const imageRoot = assistantNodes.length ? assistantNodes[assistantNodes.length - 1] : null;
-    const images = Array.from(imageRoot ? imageRoot.querySelectorAll("img") : []).filter(isVisible);
-    for (let i = images.length - 1; i >= 0; i -= 1) {
-      const img = images[i];
-      const key = getImageKey(img);
-      if (!key || baseline.has(key)) continue;
-      if (!img.complete && img.naturalWidth === 0) continue;
-      if ((img.naturalWidth || 0) < 128 || (img.naturalHeight || 0) < 128) continue;
-      if (isLikelyIcon(img)) continue;
-      return img;
+    const roots = assistantNodes.length
+      ? assistantNodes.slice().reverse()
+      : Array.from(document.querySelectorAll("[data-turn='assistant'], [data-message-author-role='assistant']")).filter(isVisible).reverse();
+
+    for (const root of roots) {
+      const candidate = findGeneratedImageCandidate(root, baseline, ignoreResponseKeys);
+      if (candidate?.img) return candidate;
     }
     return null;
+  }
+
+  function findGeneratedImageCandidate(root, baseline, ignoreResponseKeys) {
+    const images = collectGeneratedImageCandidates(root, baseline, ignoreResponseKeys);
+    return images[0] || null;
+  }
+
+  function collectGeneratedImageCandidates(root, baseline = new Set(), ignoreResponseKeys = new Set()) {
+    if (!root) return [];
+    const selectors = [
+      "[id^='image-'] img",
+      "[class*='imagegen-image'] img",
+      "img[alt^='已生成图片']",
+      "img[alt*='generated image' i]"
+    ];
+    const seen = new Set();
+    const candidates = [];
+    for (const selector of selectors) {
+      for (const img of Array.from(root.querySelectorAll(selector))) {
+        const key = getImageKey(img);
+        if (!key || seen.has(img) || seen.has(key)) continue;
+        seen.add(img);
+        seen.add(key);
+        if (!isUsableGeneratedImage(img)) continue;
+        const explicit = isExplicitGeneratedImage(img);
+        if (baseline.has(key)) continue;
+        const responseKey = getGeneratedResponseKey(img, key);
+        if (ignoreResponseKeys.has(responseKey)) continue;
+        candidates.push({
+          img,
+          key,
+          responseKey,
+          explicit,
+          score: scoreGeneratedImage(img, explicit),
+          reason: getGeneratedImageReason(img)
+        });
+      }
+    }
+    return candidates.sort((a, b) => b.score - a.score);
+  }
+
+  function isUsableGeneratedImage(img) {
+    if (!isVisible(img)) return false;
+    if (!img.complete && img.naturalWidth === 0) return false;
+    if ((img.naturalWidth || 0) < 256 || (img.naturalHeight || 0) < 256) return false;
+    if (isLikelyIcon(img)) return false;
+    return true;
+  }
+
+  function isExplicitGeneratedImage(img) {
+    const alt = normalizeText(img.alt || "").toLowerCase();
+    const container = img.closest("[id^='image-'], [class*='imagegen-image']");
+    return Boolean(container) || alt.startsWith("已生成图片") || alt.includes("generated image");
+  }
+
+  function scoreGeneratedImage(img, explicit) {
+    const rect = img.getBoundingClientRect();
+    const pixels = (img.naturalWidth || rect.width || 0) * (img.naturalHeight || rect.height || 0);
+    let score = pixels;
+    if (explicit) score += 10_000_000;
+    if (img.closest("[id^='image-']")) score += 5_000_000;
+    if (normalizeText(img.alt || "").startsWith("已生成图片")) score += 5_000_000;
+    return score;
+  }
+
+  function getGeneratedImageReason(img) {
+    if (img.closest("[id^='image-']")) return "image-id-container";
+    if (img.closest("[class*='imagegen-image']")) return "imagegen-container";
+    if (normalizeText(img.alt || "").startsWith("已生成图片")) return "generated-alt";
+    return "generated-image-candidate";
+  }
+
+  function getGeneratedResponseKey(img, imageKey = "") {
+    const container = img.closest("[id^='image-']");
+    if (container?.id) return container.id;
+    const turn = img.closest("[data-turn-id], [data-turn-id-container]");
+    const turnId = turn?.getAttribute("data-turn-id") || turn?.getAttribute("data-turn-id-container") || "";
+    const key = imageKey || getImageKey(img);
+    return [turnId, key].filter(Boolean).join("|") || key;
   }
 
   function findLatestAssistantLimitText() {
@@ -225,7 +308,10 @@
   function getAssistantMessagesAfterLastPrompt() {
     const roleNodes = Array.from(document.querySelectorAll("[data-message-author-role]")).filter(isVisible);
     const userNodes = roleNodes.filter((node) => node.getAttribute("data-message-author-role") === "user");
-    const lastUser = userNodes[state.lastUserMessageCount] || userNodes[userNodes.length - 1] || null;
+    const promptIndex = Number.isInteger(state.lastPromptUserIndex) && state.lastPromptUserIndex >= 0
+      ? state.lastPromptUserIndex
+      : userNodes.length - 1;
+    const lastUser = userNodes[promptIndex] || userNodes[userNodes.length - 1] || null;
     if (!lastUser) return [];
 
     const messages = [];
@@ -328,7 +414,28 @@
       generating: getGeneratingDiagnostics(),
       fileInputs: Array.from(document.querySelectorAll("input[type='file']")).map((input) => ({ id: input.id || "", accept: input.accept || "", testId: input.getAttribute("data-testid") || "", disabled: Boolean(input.disabled), multiple: Boolean(input.multiple) })),
       images: { count: images.length, keys: images.map(getImageKey).filter(Boolean).slice(-12) },
+      generatedImages: getGeneratedImageDiagnostics(),
       attachments: { count: new Set(attachmentNodes).size }
+    };
+  }
+
+  function getGeneratedImageDiagnostics() {
+    const baseline = new Set(state.baselineImageKeys || []);
+    const assistantNodes = getAssistantMessagesAfterLastPrompt();
+    const roots = assistantNodes.length
+      ? assistantNodes.slice(-3)
+      : Array.from(document.querySelectorAll("[data-turn='assistant'], [data-message-author-role='assistant']")).filter(isVisible).slice(-3);
+    const candidates = roots.flatMap((root) => collectGeneratedImageCandidates(root, baseline));
+    return {
+      count: candidates.length,
+      latest: candidates[0] ? {
+        key: candidates[0].key,
+        responseKey: candidates[0].responseKey,
+        reason: candidates[0].reason,
+        width: candidates[0].img.naturalWidth || 0,
+        height: candidates[0].img.naturalHeight || 0,
+        alt: candidates[0].img.alt || ""
+      } : null
     };
   }
 

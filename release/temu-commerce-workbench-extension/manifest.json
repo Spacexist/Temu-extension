@@ -55,6 +55,7 @@
         "*://*.temu.com/*"
       ],
       "exclude_matches": [
+        "*://ads.temu.com/*",
         "*://agentseller-us.temu.com/*",
         "*://agentseller-eu.temu.com/*"
       ],
@@ -71,6 +72,7 @@
         "*://*.temu.com/*"
       ],
       "exclude_matches": [
+        "*://ads.temu.com/*",
         "*://agentseller-us.temu.com/*",
         "*://agentseller-eu.temu.com/*"
       ],
@@ -95,6 +97,16 @@
     },
     {
       "matches": [
+        "https://agentseller.temu.com/*",
+        "https://seller.kuajingmaihuo.com/*"
+      ],
+      "js": [
+        "src/presentation/priceFiller/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
         "file://*/*"
       ],
       "js": [
@@ -106,6 +118,7 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "src/shared/theme.css",
         "src/legacy/1688/popup.html",
         "src/legacy/1688/popup.css",
         "src/legacy/1688/popup.js",
@@ -122,7 +135,14 @@
         "src/legacy/gptDebug/sidepanel.html",
         "src/legacy/gptDebug/sidepanel.css",
         "src/legacy/gptDebug/sidepanel.js",
-        "src/legacy/gptDebug/contentScript.js"
+        "src/legacy/gptDebug/contentScript.js",
+        "src/presentation/priceFiller/priceFiller.html",
+        "src/presentation/priceFiller/priceFiller.css",
+        "src/presentation/priceFiller/priceFiller.js",
+        "src/presentation/priceFiller/content.js",
+        "src/presentation/dxm/dxmTool.html",
+        "src/presentation/dxm/dxmTool.css",
+        "src/presentation/dxm/dxmTool.js"
       ],
       "matches": [
         "<all_urls>"

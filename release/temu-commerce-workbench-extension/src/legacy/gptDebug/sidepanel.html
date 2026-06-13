@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Temu GPT 主图调试器</title>
+    <link rel="stylesheet" href="/src/shared/theme.css">
     <link rel="stylesheet" href="./sidepanel.css">
   </head>
   <body>
@@ -39,8 +40,6 @@
         <button id="templateBtn">导入模板 Excel</button>
         <button id="cacheExcelBtn" disabled>选择保存文件夹并下载</button>
         <button id="folderBtn">选择图片文件夹</button>
-        <button id="prevBtn">上一张</button>
-        <button id="nextBtn">下一张</button>
       </div>
       <label class="field inline-field">
         <span>从第几个开始</span>
@@ -48,13 +47,19 @@
       </label>
       <div id="importStatus" class="current-image">可导入 Excel 下载 URL 图片，或直接选择已缓存图片文件夹。</div>
       <div id="currentImage" class="current-image">未选择图片</div>
+      <div class="quick-actions">
+        <button id="prevBtn">上一张</button>
+        <button id="nextBtn">下一张</button>
+        <button id="runOneBtn" class="primary">运行当前</button>
+        <button id="nextRunBtn" class="primary hot">下一张并运行</button>
+      </div>
     </section>
 
     <section class="panel">
       <h2>3. 直接提示词</h2>
       <label class="field">
         <span>发送给 GPT 的完整提示词</span>
-        <textarea id="directPrompt" rows="7">按照命令生图 记住格式要1:1 突出卖点 卖点不必太大 可以适当换换字体
+        <textarea id="directPrompt" rows="4">按照命令生图 记住格式要1:1 突出卖点 卖点不必太大 可以适当换换字体
 且产品必须保持85%视觉占比</textarea>
       </label>
       <div class="step-grid">
@@ -63,7 +68,6 @@
         <button id="detectImageBtn">C. 检测生成图</button>
         <button id="downloadBtn">D. 下载生成图</button>
       </div>
-      <button id="runOneBtn" class="primary">运行当前图片完整流程</button>
     </section>
 
     <section class="panel">

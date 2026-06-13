@@ -21,6 +21,7 @@ const els = {
   folderBtn: document.getElementById("folderBtn"),
   prevBtn: document.getElementById("prevBtn"),
   nextBtn: document.getElementById("nextBtn"),
+  nextRunBtn: document.getElementById("nextRunBtn"),
   indexInput: document.getElementById("indexInput"),
   currentImage: document.getElementById("currentImage"),
   directPrompt: document.getElementById("directPrompt"),
@@ -42,6 +43,8 @@ const state = {
   index: 0,
   currentDataUrl: "",
   lastImageDataUrl: "",
+  lastImageResponseKey: "",
+  seenResponseKeys: new Set(),
   lastDiagnostics: null,
   excelFailures: [],
   pendingExcel: null,
@@ -77,6 +80,7 @@ function bindEvents() {
   els.detectImageBtn.addEventListener("click", () => runStep("detect-image", detectImage));
   els.downloadBtn.addEventListener("click", () => runStep("download", downloadLastImage));
   els.runOneBtn.addEventListener("click", () => runStep("run-one", runCurrentFullFlow));
+  els.nextRunBtn.addEventListener("click", () => runStep("next-run", runNextFullFlow));
   els.clearLogBtn.addEventListener("click", () => { els.logList.innerHTML = ""; });
 }
 
@@ -93,6 +97,7 @@ async function onFolderSelected() {
   state.index = 0;
   state.currentDataUrl = "";
   state.lastImageDataUrl = "";
+  state.lastImageResponseKey = "";
   els.resultPreview.textContent = "暂无生成图";
   log("ok", `已载入 ${files.length} 个图片引用。fallback 模式会由浏览器提供 FileList，后续仍只读取当前图片。`);
   render();
@@ -108,6 +113,7 @@ async function importExcelTemplate(event) {
     state.pendingExcel = null;
     state.currentDataUrl = "";
     state.lastImageDataUrl = "";
+    state.lastImageResponseKey = "";
     state.files = [];
     els.resultPreview.textContent = "暂无生成图";
     log("info", `读取模板 Excel：${file.name}`);
@@ -153,6 +159,7 @@ async function cachePendingExcelImages() {
   state.files = [];
   state.currentDataUrl = "";
   state.lastImageDataUrl = "";
+  state.lastImageResponseKey = "";
   els.resultPreview.textContent = "暂无生成图";
   els.importStatus.textContent = "请选择保存文件夹，插件会在里面新建图片缓存子文件夹。";
   log("info", "请选择保存文件夹，插件会在里面新建图片缓存子文件夹。");
@@ -237,6 +244,7 @@ async function chooseFolder() {
   state.index = 0;
   state.currentDataUrl = "";
   state.lastImageDataUrl = "";
+  state.lastImageResponseKey = "";
   els.resultPreview.textContent = "暂无生成图";
   log("ok", `已索引 ${state.files.length} 张图片。只保存句柄，不读取图片内容。`);
   render();
@@ -277,16 +285,17 @@ function leadingNumber(name) {
 }
 
 function moveIndex(delta) {
-  setIndex(state.index + delta);
+  return setIndex(state.index + delta);
 }
 
-function setIndex(nextIndex) {
+async function setIndex(nextIndex) {
   if (!state.files.length) return;
   state.index = Math.max(0, Math.min(state.files.length - 1, Number(nextIndex) || 0));
   state.currentDataUrl = "";
   state.lastImageDataUrl = "";
+  state.lastImageResponseKey = "";
   render();
-  loadCurrentImagePreview();
+  await loadCurrentImagePreview();
 }
 
 async function loadCurrentImagePreview() {
@@ -324,6 +333,7 @@ async function attachCurrentImage() {
   const file = await ensureCurrentFileReady();
   const operationId = makeOperationId("attach");
   state.lastImageDataUrl = "";
+  state.lastImageResponseKey = "";
   els.resultPreview.textContent = "暂无生成图";
   log("info", `${currentSequenceText()} 开始注入附件：${file.name}`);
   const response = await sendToGpt({
@@ -344,6 +354,7 @@ async function sendPrompt() {
   if (!prompt) throw new Error("提示词为空");
   const operationId = makeOperationId("prompt");
   state.lastImageDataUrl = "";
+  state.lastImageResponseKey = "";
   els.resultPreview.textContent = "暂无生成图";
   log("info", `${currentSequenceText()} 发送提示词，operationId=${operationId}`);
   const response = await sendToGpt({
@@ -366,19 +377,30 @@ async function detectImage() {
     type: "debug:detectImage",
     operationId,
     sequenceNumber: currentSequenceNumber(),
+    ignoreResponseKeys: Array.from(state.seenResponseKeys),
     timeoutMs: 420000
   }, 440000);
   setDiagnostics(response);
   if (!response.ok || !response.imageDataUrl) throw new Error(response.error || "没有检测到生成图");
   state.lastImageDataUrl = response.imageDataUrl;
+  state.lastImageResponseKey = response.responseKey || response.diagnostics?.responseKey || response.diagnostics?.imageKey || "";
   els.resultPreview.innerHTML = `<strong>${escapeHtml(currentSequenceText())} 已检测到生成图</strong><img src="${response.imageDataUrl}" alt="generated">`;
-  log("ok", `${currentSequenceText()} 已检测到生成图：${response.width || 0}x${response.height || 0}`);
+  log("ok", `${currentSequenceText()} 已检测到未缓存生成图：${response.width || 0}x${response.height || 0}，key=${shortKey(state.lastImageResponseKey)}`);
   render();
   return response;
 }
 
 async function downloadLastImage() {
-  if (!state.lastImageDataUrl) throw new Error("暂无可下载的生成图，请先检测生成图。");
+  if (!state.lastImageDataUrl) {
+    log("info", `${currentSequenceText()} 暂无已缓存生成图，下载前先自动检测。`);
+    await detectImage();
+  }
+  if (!state.lastImageDataUrl) throw new Error("没有检测到可下载的新生成图。");
+  if (state.lastImageResponseKey && state.seenResponseKeys.has(state.lastImageResponseKey)) {
+    const message = `${currentSequenceText()} 当前 GPT response 已下载过，跳过重复下载：${shortKey(state.lastImageResponseKey)}`;
+    log("warn", message);
+    return { ok: true, skipped: true, phase: "download", responseKey: state.lastImageResponseKey, message };
+  }
   const file = currentFile();
   const filename = makeOutputFilename(file);
   const response = await chrome.runtime.sendMessage({
@@ -388,6 +410,7 @@ async function downloadLastImage() {
   });
   setDiagnostics(response);
   if (!response.ok) throw new Error(response.error || "下载失败");
+  if (state.lastImageResponseKey) state.seenResponseKeys.add(state.lastImageResponseKey);
   log("ok", `${currentSequenceText()} 下载任务已创建：${response.result.filename}`);
   return response;
 }
@@ -398,6 +421,13 @@ async function runCurrentFullFlow() {
   await detectImage();
   await downloadLastImage();
   log("ok", `${currentSequenceText()} 完整流程完成。`);
+}
+
+async function runNextFullFlow() {
+  if (!state.files.length) throw new Error("未选择图片");
+  if (state.index >= state.files.length - 1) throw new Error("已经是最后一张");
+  await setIndex(state.index + 1);
+  await runCurrentFullFlow();
 }
 
 async function prepareGptTab({ active = false } = {}) {
@@ -491,6 +521,7 @@ function currentFile() { return state.files[state.index] || null; }
 function currentSequenceNumber() { return Number(currentFile()?.sequenceNumber) || leadingNumber(currentFile()?.name) || state.index + 1; }
 function currentSequenceText() { return `第 ${currentSequenceNumber()} 个`; }
 function makeOperationId(stage) { return `${stage}-${Date.now()}-${currentSequenceNumber()}`; }
+function shortKey(value) { const text = String(value || ""); return text.length > 48 ? `${text.slice(0, 24)}...${text.slice(-16)}` : text || "-"; }
 function guessMime(name) { return /\.webp$/i.test(name) ? "image/webp" : /\.jpe?g$/i.test(name) ? "image/jpeg" : /\.gif$/i.test(name) ? "image/gif" : "image/png"; }
 function makeOutputFilename(file) {
   const name = file?.name || `image_${currentSequenceNumber()}.png`;
@@ -501,13 +532,31 @@ function makeOutputFilename(file) {
 function fileToDataUrl(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onerror = () => reject(new Error("读取图片失败")); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); }
 function setDiagnostics(value) { state.lastDiagnostics = value; els.diagnosticsOutput.textContent = JSON.stringify(value, null, 2); }
 async function runStep(phase, fn) {
-  if (state.busy) return;
+  if (state.busy && phase !== "stop") return;
+  if (phase === "stop") {
+    const previousPhase = els.phaseStatus.textContent;
+    els.phaseStatus.textContent = "stop";
+    try {
+      const result = await fn();
+      log("ok", `stop 完成。`);
+      return result;
+    } catch (error) {
+      log("bad", `stop 失败：${error.message || error}`);
+      setDiagnostics({ ok: false, phase, error: String(error.message || error), lastDiagnostics: state.lastDiagnostics });
+    } finally {
+      els.phaseStatus.textContent = previousPhase || "idle";
+      renderButtons();
+      render();
+    }
+    return;
+  }
   state.busy = true; els.phaseStatus.textContent = phase; renderButtons();
   const started = performance.now();
   try { const result = await fn(); log("ok", `${phase} 完成，耗时 ${Math.round(performance.now() - started)}ms`); return result; }
   catch (error) {
     if (phase === "detect-image" || phase === "run-one") {
       state.lastImageDataUrl = "";
+      state.lastImageResponseKey = "";
       els.resultPreview.textContent = "没有检测到可下载的新生成图";
     }
     log("bad", `${phase} 失败：${error.message || error}`);

@@ -1,0 +1,224 @@
+:root {
+  color-scheme: light;
+  --brand: #b8562d;
+  --brand-strong: #934321;
+  --accent: #2f6f62;
+  --bg: #f4efe7;
+  --card: #fffdf9;
+  --card-edge: #eadfcd;
+  --surface: #faf6ef;
+  --text: #1f2b24;
+  --muted: #66766d;
+  --label: #496056;
+  --success: #2e7d5b;
+  --warning: #c4841d;
+  --danger: #c43c3c;
+  --info: #3d7ea6;
+  --shadow-sm: 0 4px 12px rgba(61, 44, 24, 0.06);
+  --shadow-md: 0 12px 28px rgba(61, 44, 24, 0.10);
+  --shadow-lg: 0 18px 40px rgba(61, 44, 24, 0.12);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 0.18s;
+  --duration-normal: 0.3s;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  font-family: var(--font-family);
+}
+
+body {
+  background:
+    radial-gradient(circle at top right, rgba(184, 86, 45, 0.13), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(47, 111, 98, 0.11), transparent 30%),
+    var(--bg);
+  color: var(--text);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active {
+  transform: translateY(0) scale(0.98);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+}
+
+.card {
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+  animation: slideUp var(--duration-normal) var(--ease-out) both;
+}
+
+.card:nth-of-type(1) { animation-delay: 0ms; }
+.card:nth-of-type(2) { animation-delay: 60ms; }
+.card:nth-of-type(3) { animation-delay: 120ms; }
+.card:nth-of-type(4) { animation-delay: 180ms; }
+
+.btn-primary,
+.primary-button,
+button.primary,
+.btn.btn-primary {
+  border-color: transparent;
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+  box-shadow: 0 10px 20px rgba(184, 86, 45, 0.22);
+}
+
+.btn-secondary,
+.secondary-button,
+button.secondary {
+  color: var(--text);
+  background: #f2eadf;
+}
+
+.btn-success,
+button.success {
+  color: #fff;
+  background: var(--success);
+}
+
+.btn-danger,
+button.danger,
+.btn-stop {
+  color: #fff;
+  background: var(--danger);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field span,
+.field label,
+label.field {
+  color: var(--label);
+  font-weight: 700;
+}
+
+.field input,
+.field textarea,
+input,
+textarea {
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--text);
+}
+
+.field input:focus,
+.field textarea:focus,
+input:focus,
+textarea:focus {
+  outline: 2px solid rgba(184, 86, 45, 0.22);
+  outline-offset: 2px;
+}
+
+.badge,
+.pill,
+.shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.status-dot.active {
+  background: var(--success);
+  animation: pulse 2s infinite;
+}
+
+.status-dot.done {
+  background: var(--accent);
+}
+
+.log-box,
+.logs,
+.log-list,
+#logOutput,
+#log {
+  scrollbar-color: rgba(184, 86, 45, 0.45) rgba(234, 223, 205, 0.45);
+}
+
+.progress-bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--card-edge);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  transition: width 0.5s var(--ease-out);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 125, 91, 0.38);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(46, 125, 91, 0);
+  }
+}
