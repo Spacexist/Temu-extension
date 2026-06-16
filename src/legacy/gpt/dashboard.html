@@ -61,12 +61,8 @@
             <input id="startFromIndex" type="number" min="1" value="1">
           </label>
           <label>
-            规划超时秒数
-            <input id="planTimeout" type="number" min="30" max="900" value="240">
-          </label>
-          <label>
-            执行超时秒数
-            <input id="executeTimeout" type="number" min="60" max="1200" value="420">
+            超时秒数
+            <input id="taskTimeout" type="number" min="30" max="1200" value="420">
           </label>
           <label>
             输出后缀
@@ -87,6 +83,7 @@
             <span>当前图片</span>
             <strong id="currentFile">未开始</strong>
             <em id="currentStage">等待选择文件夹</em>
+            <em id="currentSequence">去重后序号：-</em>
           </div>
           <div class="bar">
             <div id="progressFill"></div>

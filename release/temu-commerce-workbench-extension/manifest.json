@@ -54,6 +54,11 @@
         "*://temu.com/*",
         "*://*.temu.com/*"
       ],
+      "exclude_matches": [
+        "*://ads.temu.com/*",
+        "*://agentseller-us.temu.com/*",
+        "*://agentseller-eu.temu.com/*"
+      ],
       "js": [
         "src/presentation/temuSplit/pageHook.js"
       ],
@@ -65,6 +70,11 @@
       "matches": [
         "*://temu.com/*",
         "*://*.temu.com/*"
+      ],
+      "exclude_matches": [
+        "*://ads.temu.com/*",
+        "*://agentseller-us.temu.com/*",
+        "*://agentseller-eu.temu.com/*"
       ],
       "js": [
         "src/presentation/temuSplit/content.js"
@@ -87,20 +97,20 @@
     },
     {
       "matches": [
-        "file://*/*"
+        "https://agentseller.temu.com/*",
+        "https://seller.kuajingmaihuo.com/*"
       ],
       "js": [
-        "src/legacy/1688/preview_bridge.js"
+        "src/presentation/priceFiller/content.js"
       ],
       "run_at": "document_idle"
     },
     {
       "matches": [
-        "https://chatgpt.com/*",
-        "https://chat.openai.com/*"
+        "file://*/*"
       ],
       "js": [
-        "src/legacy/gpt/contentScript.js"
+        "src/legacy/1688/preview_bridge.js"
       ],
       "run_at": "document_idle"
     }
@@ -108,6 +118,7 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "src/shared/theme.css",
         "src/legacy/1688/popup.html",
         "src/legacy/1688/popup.css",
         "src/legacy/1688/popup.js",
@@ -117,7 +128,21 @@
         "src/legacy/1688/config.json",
         "src/legacy/gpt/dashboard.html",
         "src/legacy/gpt/dashboard.css",
-        "src/legacy/gpt/dashboard.js"
+        "src/legacy/gpt/dashboard.js",
+        "src/legacy/gpt/chatgptClient.js",
+        "src/legacy/gpt/downloadClient.js",
+        "src/legacy/gpt/queueEngine.js",
+        "src/legacy/gptDebug/sidepanel.html",
+        "src/legacy/gptDebug/sidepanel.css",
+        "src/legacy/gptDebug/sidepanel.js",
+        "src/legacy/gptDebug/contentScript.js",
+        "src/presentation/priceFiller/priceFiller.html",
+        "src/presentation/priceFiller/priceFiller.css",
+        "src/presentation/priceFiller/priceFiller.js",
+        "src/presentation/priceFiller/content.js",
+        "src/presentation/dxm/dxmTool.html",
+        "src/presentation/dxm/dxmTool.css",
+        "src/presentation/dxm/dxmTool.js"
       ],
       "matches": [
         "<all_urls>"

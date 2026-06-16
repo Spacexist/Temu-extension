@@ -1,36 +1,20 @@
-* {
-  box-sizing: border-box;
-}
-
 body {
-  margin: 0;
   min-width: 420px;
-  color: #1d252c;
-  background: #f6f7f8;
-  font-family: Arial, "Microsoft YaHei", sans-serif;
 }
 
 button {
-  min-height: 36px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  color: #1f2933;
+  min-height: 38px;
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius-sm);
+  color: var(--text);
   background: #fff;
   cursor: pointer;
-  font: inherit;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 button.primary {
-  border-color: #f97316;
-  color: #fff;
-  background: #f97316;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
+  border-color: transparent;
 }
 
 .split-shell {
@@ -43,34 +27,38 @@ button:disabled {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
+  padding: 16px;
+  border: 1px solid rgba(184, 86, 45, 0.18);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
 }
 
 h1,
+h2,
 p {
   margin: 0;
 }
 
 h1 {
-  color: #1f2933;
-  font-size: 18px;
+  color: var(--text);
+  font-size: 19px;
 }
 
 .hero p,
 .hint {
-  margin-top: 5px;
-  color: #64748b;
+  margin-top: 6px;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
 }
 
 .shortcut {
   flex: 0 0 auto;
-  padding: 6px 9px;
-  border-radius: 999px;
-  color: #9a3412;
-  background: #ffedd5;
+  padding: 7px 10px;
+  color: #fff;
+  background: var(--accent);
   font-size: 12px;
-  font-weight: 800;
 }
 
 .notice,
@@ -79,22 +67,24 @@ h1 {
 .log-card {
   margin-bottom: 12px;
   padding: 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #fff;
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius-md);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
 }
 
 .notice {
-  color: #623b00;
-  background: #fff7ec;
+  border-style: dashed;
+  color: #744a0f;
+  background: rgba(196, 132, 29, 0.10);
   font-size: 13px;
   line-height: 1.5;
 }
 
 .status-card {
   display: grid;
-  gap: 10px;
-  background: #f8fafc;
+  gap: 8px;
+  background: var(--card);
 }
 
 .status-row {
@@ -102,15 +92,18 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   font-size: 13px;
 }
 
 .status-row span {
-  color: #64748b;
+  color: var(--muted);
 }
 
 .status-row strong {
-  color: #0f172a;
+  color: var(--text);
   text-align: right;
 }
 
@@ -122,7 +115,7 @@ h1 {
 .message {
   min-height: 18px;
   margin-top: 10px;
-  color: #b45309;
+  color: var(--warning);
   font-size: 12px;
   line-height: 1.4;
 }
@@ -142,22 +135,22 @@ h1 {
 
 .log-header h2 {
   margin: 0;
-  color: #1f2933;
+  color: var(--text);
   font-size: 14px;
 }
 
 .log-header button {
   min-height: 28px;
   padding: 0 10px;
-  color: #64748b;
-  background: #f8fafc;
+  color: var(--muted);
+  background: var(--surface);
   font-size: 12px;
 }
 
 .log-list {
   max-height: 150px;
   overflow: auto;
-  color: #475569;
+  color: var(--muted);
   font-family: Consolas, "SFMono-Regular", "Liberation Mono", monospace;
   font-size: 12px;
   line-height: 1.5;
@@ -165,6 +158,6 @@ h1 {
 }
 
 .log-entry {
-  padding: 4px 0;
-  border-bottom: 1px solid #eef1f4;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--card-edge);
 }

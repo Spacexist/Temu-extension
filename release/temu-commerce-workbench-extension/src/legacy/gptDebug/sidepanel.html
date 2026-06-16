@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Temu GPT 主图调试器</title>
+    <link rel="stylesheet" href="/src/shared/theme.css">
+    <link rel="stylesheet" href="./sidepanel.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Temu GPT 主图调试器</h1>
+        <p>直接提示词模式：附件确认后立刻发送，不再规划/执行两段式</p>
+      </div>
+      <span class="pill">Direct</span>
+    </header>
+
+    <section class="status-grid">
+      <div class="metric"><span>GPT 标签</span><strong id="gptStatus">未绑定</strong></div>
+      <div class="metric"><span>图片队列</span><strong id="queueStatus">0</strong></div>
+      <div class="metric"><span>当前序号</span><strong id="sequenceStatus">-</strong></div>
+      <div class="metric"><span>最近阶段</span><strong id="phaseStatus">idle</strong></div>
+    </section>
+
+    <section class="panel">
+      <h2>1. GPT 页面</h2>
+      <div class="button-row">
+        <button id="openGptBtn">打开/绑定 GPT</button>
+        <button id="stateBtn">读取 DOM 状态</button>
+        <button id="stopBtn" class="danger">停止生成</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>2. 图片输入</h2>
+      <input id="folderInput" type="file" accept="image/*" webkitdirectory multiple hidden>
+      <input id="templateInput" type="file" accept=".xlsx,.xls" hidden>
+      <div class="button-row">
+        <button id="templateBtn">导入模板 Excel</button>
+        <button id="cacheExcelBtn" disabled>选择保存文件夹并下载</button>
+        <button id="folderBtn">选择图片文件夹</button>
+      </div>
+      <label class="field inline-field">
+        <span>从第几个开始</span>
+        <input id="indexInput" type="number" min="1" value="1">
+      </label>
+      <div id="importStatus" class="current-image">可导入 Excel 下载 URL 图片，或直接选择已缓存图片文件夹。</div>
+      <div id="currentImage" class="current-image">未选择图片</div>
+      <div class="quick-actions">
+        <button id="prevBtn">上一张</button>
+        <button id="nextBtn">下一张</button>
+        <button id="runOneBtn" class="primary">运行当前</button>
+        <button id="nextRunBtn" class="primary hot">下一张并运行</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>3. 直接提示词</h2>
+      <label class="field">
+        <span>发送给 GPT 的完整提示词</span>
+        <textarea id="directPrompt" rows="4">按照命令生图 记住格式要1:1 突出卖点 卖点不必太大 可以适当换换字体
+且产品必须保持85%视觉占比</textarea>
+      </label>
+      <div class="step-grid">
+        <button id="attachBtn">A. 注入并确认附件</button>
+        <button id="sendPromptBtn">B. 发送提示词</button>
+        <button id="detectImageBtn">C. 检测生成图</button>
+        <button id="downloadBtn">D. 下载生成图</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>4. 当前生成图</h2>
+      <div id="resultPreview" class="result-preview">暂无生成图</div>
+    </section>
+
+    <section class="panel">
+      <h2>5. 诊断</h2>
+      <pre id="diagnosticsOutput" class="output">暂无诊断</pre>
+    </section>
+
+    <section class="panel log-panel">
+      <div class="log-head">
+        <h2>6. 步骤日志</h2>
+        <button id="clearLogBtn" class="ghost">清空</button>
+      </div>
+      <div id="logList" class="logs"></div>
+    </section>
+
+    <script src="/node_modules/xlsx/dist/xlsx.full.min.js"></script>
+    <script type="module" src="./sidepanel.js"></script>
+  </body>
+</html>

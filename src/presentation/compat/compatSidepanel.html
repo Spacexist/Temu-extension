@@ -4,26 +4,27 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Temu 商品工作台</title>
+    <link rel="stylesheet" href="/src/shared/theme.css">
     <link rel="stylesheet" href="./compatSidepanel.css">
   </head>
   <body>
     <main class="compat-shell">
-      <header class="compat-tabs" role="tablist" aria-label="商品工作台功能">
-        <button id="tabT2" class="tab" type="button" role="tab" aria-selected="false" data-panel="panelT2">
-          T2 交集
-        </button>
-        <button id="tab1688" class="tab is-active" type="button" role="tab" aria-selected="true" data-panel="panel1688">
-          1688 核价
-        </button>
-        <button id="tabGpt" class="tab" type="button" role="tab" aria-selected="false" data-panel="panelGpt">
-          GPT 主图
-        </button>
-        <button id="tabDxm" class="tab" type="button" role="tab" aria-selected="false" data-panel="panelDxm">
-          店小秘
-        </button>
-        <button id="tabTemuSplit" class="tab" type="button" role="tab" aria-selected="false" data-panel="panelTemuSplit">
-          Temu分屏
-        </button>
+      <header class="nav-shell" role="tablist" aria-label="商品工作台功能">
+        <div class="nav-group">
+          <span class="nav-group-label">主线</span>
+          <div class="segment-control" data-group="main">
+            <button id="tabT2" class="segment-tab" type="button" role="tab" aria-selected="false" data-panel="panelT2">T2交集</button>
+            <button id="tab1688" class="segment-tab is-active" type="button" role="tab" aria-selected="true" data-panel="panel1688">1688核价</button>
+          </div>
+        </div>
+        <div class="nav-group">
+          <span class="nav-group-label">工具</span>
+          <div class="segment-control" data-group="tools">
+            <button id="tabGpt" class="segment-tab" type="button" role="tab" aria-selected="false" data-panel="panelGpt">GPT</button>
+            <button id="tabDxmPrice" class="segment-tab" type="button" role="tab" aria-selected="false" data-panel="panelDxmPrice">店小秘/零售价</button>
+            <button id="tabSplit" class="segment-tab" type="button" role="tab" aria-selected="false" data-panel="panelSplit">分屏</button>
+          </div>
+        </div>
       </header>
 
       <section id="panelT2" class="panel" role="tabpanel" aria-labelledby="tabT2">
@@ -35,14 +36,23 @@
       </section>
 
       <section id="panelGpt" class="panel" role="tabpanel" aria-labelledby="tabGpt">
-        <iframe title="Temu GPT 主图自动化" src="/src/legacy/gpt/dashboard.html"></iframe>
+        <iframe title="GPT 主图" src="/src/legacy/gptDebug/sidepanel.html"></iframe>
       </section>
 
-      <section id="panelDxm" class="panel" role="tabpanel" aria-labelledby="tabDxm">
-        <iframe title="店小秘工具" src="/src/presentation/dxm/dxmTool.html"></iframe>
+      <section id="panelDxmPrice" class="panel combined-panel" role="tabpanel" aria-labelledby="tabDxmPrice">
+        <div class="subnav-shell" role="tablist" aria-label="店小秘与零售价工具">
+          <button class="subnav-tab is-active" type="button" data-tool="dxm">店小秘</button>
+          <button class="subnav-tab" type="button" data-tool="price">零售价</button>
+        </div>
+        <div class="tool-frame is-active" data-tool-frame="dxm">
+          <iframe title="店小秘" src="/src/presentation/dxm/dxmTool.html"></iframe>
+        </div>
+        <div class="tool-frame" data-tool-frame="price">
+          <iframe title="建议零售价填写" src="/src/presentation/priceFiller/priceFiller.html"></iframe>
+        </div>
       </section>
 
-      <section id="panelTemuSplit" class="panel" role="tabpanel" aria-labelledby="tabTemuSplit">
+      <section id="panelSplit" class="panel" role="tabpanel" aria-labelledby="tabSplit">
         <iframe title="Temu 分屏采集" src="/src/presentation/temuSplit/temuSplitPanel.html"></iframe>
       </section>
     </main>

@@ -2,6 +2,7 @@ import { createImportedProduct } from "../../domain/product.js";
 
 export const DEFAULT_T2_MAPPING = Object.freeze({
   infoNameColumn: 1,
+  infoSkuColumn: 5,
   infoImageColumn: 10,
   infoSkcColumn: 56,
   priceSkcColumn: 1,
@@ -23,7 +24,8 @@ export function importT2Products({ infoRows, priceRows, mapping = DEFAULT_T2_MAP
       name: item.name,
       skc: item.skc,
       quotedPrice,
-      imageUrl: item.imageUrl
+      imageUrl: item.imageUrl,
+      skuValues: item.skuValues
     }));
   }
 
@@ -41,6 +43,20 @@ export function importT2Products({ infoRows, priceRows, mapping = DEFAULT_T2_MAP
     duplicatePriceSkcRows: priceMapping.duplicateSkcRows,
     priceHeaderRow: priceMapping.priceHeaderRow
   };
+}
+
+export function extractUniquePriceSkcText(priceRows) {
+  const seen = new Set();
+  const skcs = [];
+
+  for (const row of priceRows.slice(1)) {
+    const skc = normalizeSkc(cell(row, 1));
+    if (!skc || seen.has(skc)) continue;
+    seen.add(skc);
+    skcs.push(skc);
+  }
+
+  return skcs.join(",");
 }
 
 function loadPriceMapping(rows, mapping) {
@@ -112,16 +128,30 @@ function loadPriceMapping(rows, mapping) {
 
 function loadInfoItems(rows, mapping) {
   const result = [];
-  const seen = new Set();
+  const itemsBySkc = new Map();
+  const skuSeenBySkc = new Map();
   for (const row of rows.slice(1)) {
     const skc = normalizeSkc(cell(row, mapping.infoSkcColumn));
-    if (!skc || seen.has(skc)) continue;
-    seen.add(skc);
-    result.push({
-      skc,
-      name: normalizeText(cell(row, mapping.infoNameColumn)),
-      imageUrl: firstImageUrl(cell(row, mapping.infoImageColumn))
-    });
+    if (!skc) continue;
+
+    if (!itemsBySkc.has(skc)) {
+      const item = {
+        skc,
+        name: normalizeText(cell(row, mapping.infoNameColumn)),
+        imageUrl: firstImageUrl(cell(row, mapping.infoImageColumn)),
+        skuValues: []
+      };
+      itemsBySkc.set(skc, item);
+      skuSeenBySkc.set(skc, new Set());
+      result.push(item);
+    }
+
+    const skuValue = normalizeText(cell(row, mapping.infoSkuColumn));
+    const skuSeen = skuSeenBySkc.get(skc);
+    if (skuValue && !skuSeen.has(skuValue)) {
+      skuSeen.add(skuValue);
+      itemsBySkc.get(skc).skuValues.push(skuValue);
+    }
   }
   return result;
 }

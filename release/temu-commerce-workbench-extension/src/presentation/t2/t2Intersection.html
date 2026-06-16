@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>T2 价格表信息表交集</title>
+    <link rel="stylesheet" href="/src/shared/theme.css">
     <link rel="stylesheet" href="./t2Intersection.css">
   </head>
   <body>
@@ -27,6 +28,16 @@
             <input id="priceFile" type="file" accept=".xlsx,.xls">
           </label>
           <button id="processButton" type="button">处理交集</button>
+        </div>
+        <div class="skc-tool">
+          <div class="section-head compact-head">
+            <h2>价格表 SKC 文本</h2>
+            <span id="priceSkcStatus">尚未提取</span>
+          </div>
+          <div class="button-row skc-actions">
+            <button id="copyPriceSkcButton" type="button" disabled>复制文本</button>
+          </div>
+          <textarea id="priceSkcText" readonly rows="4" placeholder="从价格表 A2 开始读取，去重后用英文逗号分隔输出"></textarea>
         </div>
       </section>
 

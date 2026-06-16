@@ -114,9 +114,25 @@ function isTemuUrl(url) {
   }
 }
 
+function isForbiddenSellerCenterUrl(url) {
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
+    return hostname === "seller.kuajingmaihuo.com"
+      || (hostname.endsWith(".temu.com") && hostname.includes("seller"));
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedSplitSourceUrl(url) {
+  return Boolean(url && isTemuUrl(url) && !isForbiddenSellerCenterUrl(url));
+}
+
 function isProductDetailUrl(url) {
   try {
     const parsed = new URL(url);
+    if (isForbiddenSellerCenterUrl(parsed.href)) return false;
     if (!isTemuUrl(parsed.href)) return false;
 
     const path = parsed.pathname.toLowerCase();
@@ -233,6 +249,11 @@ async function handleNaturalDetailTab(tab) {
 
   const sourceTab = await tabGet(candidate.sourceTabId);
   if (!sourceTab) return false;
+  if (isForbiddenSellerCenterUrl(sourceTab.url)) {
+    pendingNaturalClicks.delete(sourceTab.id);
+    candidateNaturalTabs.delete(tab.id);
+    return false;
+  }
 
   let detailTab = await findManagedDetailTab(state, sourceTab);
 
@@ -345,11 +366,15 @@ async function findManagedDetailTab(state, sourceTab) {
 
 async function findSplitSourceTab(detailTab) {
   return findSplitMateTab(detailTab, (candidate) => {
-    return Boolean(candidate.url && isTemuUrl(candidate.url) && !isProductDetailUrl(candidate.url));
+    return Boolean(candidate.url && isAllowedSplitSourceUrl(candidate.url) && !isProductDetailUrl(candidate.url));
   });
 }
 
 async function openDetailInManagedTab(url, sourceTab) {
+  if (sourceTab?.url && isForbiddenSellerCenterUrl(sourceTab.url)) {
+    throw new Error("卖家中心页面禁止使用 Temu 分屏拦截或采集。");
+  }
+
   if (!isProductDetailUrl(url)) {
     throw new Error("这不是 Temu 商品详情链接。");
   }
@@ -408,7 +433,8 @@ async function getStatus(currentTabId = null) {
     onboardingDone: state.onboardingDone,
     hasDetailTab: Boolean(detailTab),
     hasSourceTab: Boolean(sourceTab),
-    currentIsTemu: Boolean(currentTab?.url && isTemuUrl(currentTab.url)),
+    currentIsTemu: Boolean(currentTab?.url && isAllowedSplitSourceUrl(currentTab.url)),
+    currentBlockedSellerCenter: Boolean(currentTab?.url && isForbiddenSellerCenterUrl(currentTab.url)),
     splitViewSupported,
     sourceSplitViewId,
     detailSplitViewId,
@@ -474,7 +500,10 @@ async function focusDetailTab() {
 
 async function bindSourceTab(tabId) {
   const tab = await tabGet(tabId);
-  if (!tab?.url || !isTemuUrl(tab.url)) {
+  if (tab?.url && isForbiddenSellerCenterUrl(tab.url)) {
+    throw new Error("卖家中心页面禁止绑定为 Temu 分屏列表页。");
+  }
+  if (!tab?.url || !isAllowedSplitSourceUrl(tab.url)) {
     throw new Error("当前标签不是 Temu 页面，不能绑定为列表页。");
   }
 
@@ -593,6 +622,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       case "TEMU_SPLIT_EXPECT_NATURAL_DETAIL_TAB": {
         const state = await storageGet();
+        if (sender.tab?.url && isForbiddenSellerCenterUrl(sender.tab.url)) {
+          sendResponse({ ok: false, error: "卖家中心页面禁止使用 Temu 分屏拦截或采集。" });
+          break;
+        }
         if (state.enabled && sender.tab?.id) {
           rememberNaturalDetailExpectation(sender.tab);
           await storageSet({ sourceTabId: sender.tab.id });

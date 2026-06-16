@@ -15,13 +15,14 @@ listenForT2IntersectionResultChanges(renderFromStorage);
 renderFromStorage();
 
 async function renderFromStorage() {
-  const { products, summary } = await loadT2IntersectionResult();
+  const { products, summary, duplicatePriceSkcs } = await loadT2IntersectionResult();
+  const multiSkuSet = createDuplicateSkcSet(duplicatePriceSkcs);
   els.summaryText.textContent = buildSummaryText(products, summary);
   els.grid.innerHTML = "";
   els.emptyState.classList.toggle("is-visible", products.length === 0);
 
   for (const product of products) {
-    els.grid.appendChild(createCard(product));
+    els.grid.appendChild(createCard(product, multiSkuSet.has(normalizeSkc(product.skc))));
   }
 }
 
@@ -31,7 +32,7 @@ function buildSummaryText(products, summary) {
   return `共 ${products.length} 条商品。信息表 SKC ${summary.infoUniqueSkcCount} 个，价格表 SKC ${summary.priceUniqueSkcCount} 个，交集 ${summary.matchedProductCount} 个。`;
 }
 
-function createCard(product) {
+function createCard(product, isMultiSku = false) {
   const card = document.createElement("article");
   card.className = "card";
 
@@ -52,7 +53,10 @@ function createCard(product) {
       <div class="label">标题</div>
       <div class="value name">${escapeHtml(product.name || "")}</div>
       <div class="label">SKC</div>
-      <div class="value">${escapeHtml(product.skc || "")}</div>
+      <div class="value skc-line">
+        <span class="skc-value">${escapeHtml(product.skc || "")}</span>
+        ${isMultiSku ? renderMultiSkuBadge(product.skuValues) : ""}
+      </div>
       <div class="label">调整后申报价</div>
       <div class="value">${escapeHtml(product.quotedPrice ?? "")}</div>
       <div class="label">图片 URL</div>
@@ -113,6 +117,43 @@ function setButtonState(button, text, disabled, stateClass = "") {
   button.disabled = disabled;
   button.classList.remove("is-success", "is-error");
   if (stateClass) button.classList.add(stateClass);
+}
+
+function renderMultiSkuBadge(skuValues) {
+  const normalizedSkuValues = normalizeSkuValues(skuValues);
+  const tooltipBody = normalizedSkuValues.length
+    ? normalizedSkuValues.map((skuValue) => `<div class="sku-tooltip-item">${escapeHtml(skuValue)}</div>`).join("")
+    : `<div class="sku-tooltip-empty">未读取到 E 列 SKU</div>`;
+
+  return `
+    <span class="sku-status-badge sku-status-badge--success" aria-label="多SKU，悬停查看信息表 SKU" tabindex="0">
+      <span class="sku-status-dot" aria-hidden="true"></span>
+      <span>多SKU</span>
+      <span class="sku-tooltip" role="tooltip">
+        <span class="sku-tooltip-title">信息表 SKU</span>
+        <span class="sku-tooltip-list">${tooltipBody}</span>
+      </span>
+    </span>
+  `;
+}
+
+function normalizeSkuValues(skuValues) {
+  return Array.from(new Set((Array.isArray(skuValues) ? skuValues : [])
+    .map((value) => String(value ?? "").trim())
+    .filter(Boolean)));
+}
+
+function createDuplicateSkcSet(duplicatePriceSkcs) {
+  const result = new Set();
+  for (const item of duplicatePriceSkcs || []) {
+    const skc = normalizeSkc(typeof item === "object" ? item?.skc : item);
+    if (skc) result.add(skc);
+  }
+  return result;
+}
+
+function normalizeSkc(value) {
+  return String(value ?? "").trim();
 }
 
 function escapeHtml(value) {
