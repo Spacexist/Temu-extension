@@ -115,6 +115,61 @@ h1 {
   word-break: break-word;
 }
 
+.skc-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.skc-value {
+  min-width: 0;
+}
+
+.sku-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 24px;
+  padding: 3px 9px 3px 7px;
+  border: 1px solid rgba(52, 211, 153, 0.38);
+  border-radius: 999px;
+  color: #166534;
+  background:
+    radial-gradient(circle at 10% 50%, rgba(52, 211, 153, 0.24), transparent 42%),
+    linear-gradient(135deg, rgba(220, 252, 231, 0.92), rgba(236, 253, 245, 0.72));
+  box-shadow: 0 6px 18px rgba(22, 101, 52, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.sku-status-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.16), 0 0 14px rgba(52, 211, 153, 0.65);
+}
+
+.sku-status-badge--danger {
+  border-color: rgba(248, 113, 113, 0.42);
+  color: #991b1b;
+  background:
+    radial-gradient(circle at 10% 50%, rgba(248, 113, 113, 0.22), transparent 42%),
+    linear-gradient(135deg, rgba(254, 226, 226, 0.90), rgba(255, 241, 242, 0.72));
+}
+
+.sku-status-badge--danger .sku-status-dot {
+  background: #f87171;
+  box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.16), 0 0 14px rgba(248, 113, 113, 0.62);
+}
+
 .name {
   font-weight: 700;
 }

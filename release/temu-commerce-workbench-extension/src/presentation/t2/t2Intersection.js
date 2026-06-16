@@ -64,7 +64,8 @@ async function processIntersection() {
     state.priceHeaderRow = result.priceHeaderRow;
     await saveT2IntersectionResult({
       products: state.products,
-      summary: state.summary
+      summary: state.summary,
+      duplicatePriceSkcs: state.duplicatePriceSkcs
     });
     await openResultPreview();
     addLog(`处理完成：交集商品 ${result.summary.matchedProductCount} 个，重复 SKC ${result.summary.duplicatePriceSkcCount ?? 0} 个。`);
