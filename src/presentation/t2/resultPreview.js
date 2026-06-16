@@ -55,7 +55,7 @@ function createCard(product, isMultiSku = false) {
       <div class="label">SKC</div>
       <div class="value skc-line">
         <span class="skc-value">${escapeHtml(product.skc || "")}</span>
-        ${isMultiSku ? `<span class="sku-status-badge sku-status-badge--success" aria-label="多SKU"><span class="sku-status-dot" aria-hidden="true"></span>多SKU</span>` : ""}
+        ${isMultiSku ? renderMultiSkuBadge(product.skuValues) : ""}
       </div>
       <div class="label">调整后申报价</div>
       <div class="value">${escapeHtml(product.quotedPrice ?? "")}</div>
@@ -117,6 +117,30 @@ function setButtonState(button, text, disabled, stateClass = "") {
   button.disabled = disabled;
   button.classList.remove("is-success", "is-error");
   if (stateClass) button.classList.add(stateClass);
+}
+
+function renderMultiSkuBadge(skuValues) {
+  const normalizedSkuValues = normalizeSkuValues(skuValues);
+  const tooltipBody = normalizedSkuValues.length
+    ? normalizedSkuValues.map((skuValue) => `<div class="sku-tooltip-item">${escapeHtml(skuValue)}</div>`).join("")
+    : `<div class="sku-tooltip-empty">未读取到 E 列 SKU</div>`;
+
+  return `
+    <span class="sku-status-badge sku-status-badge--success" aria-label="多SKU，悬停查看信息表 SKU" tabindex="0">
+      <span class="sku-status-dot" aria-hidden="true"></span>
+      <span>多SKU</span>
+      <span class="sku-tooltip" role="tooltip">
+        <span class="sku-tooltip-title">信息表 SKU</span>
+        <span class="sku-tooltip-list">${tooltipBody}</span>
+      </span>
+    </span>
+  `;
+}
+
+function normalizeSkuValues(skuValues) {
+  return Array.from(new Set((Array.isArray(skuValues) ? skuValues : [])
+    .map((value) => String(value ?? "").trim())
+    .filter(Boolean)));
 }
 
 function createDuplicateSkcSet(duplicatePriceSkcs) {

@@ -7,7 +7,7 @@ export const ProductStatus = Object.freeze({
   Failed: "failed"
 });
 
-export function createImportedProduct({ id, name, skc, quotedPrice, imageUrl }) {
+export function createImportedProduct({ id, name, skc, quotedPrice, imageUrl, skuValues = [] }) {
   if (!id) throw new Error("Product id is required");
   if (!skc) throw new Error("Product SKC is required");
   if (!Number.isFinite(Number(quotedPrice))) throw new Error("Product quotedPrice must be numeric");
@@ -16,6 +16,9 @@ export function createImportedProduct({ id, name, skc, quotedPrice, imageUrl }) 
     id,
     name: String(name ?? "").trim(),
     skc: String(skc).trim(),
+    skuValues: Array.from(new Set((Array.isArray(skuValues) ? skuValues : [])
+      .map((value) => String(value ?? "").trim())
+      .filter(Boolean))),
     quotedPrice: Number(quotedPrice),
     imageUrl: String(imageUrl ?? "").trim(),
     source1688: {},
