@@ -35,6 +35,7 @@ const state = {
   records: [],
   jsonFileHandle: null,
   jsonFileMeta: null,
+  currentSkuValues: [],
   quantityBaseValues: {
     quotedPrice: null,
     unitPrice: null,
@@ -64,6 +65,7 @@ const elements = {
   appendSelectedJsonButton: document.querySelector("#appendSelectedJsonButton"),
   removeSelectedCollectionButton: document.querySelector("#removeSelectedCollectionButton"),
   statusText: document.querySelector("#statusText"),
+  skuInfoBadge: document.querySelector("#skuInfoBadge"),
   name: document.querySelector("#name"),
   skc: document.querySelector("#skc"),
   quotedPrice: document.querySelector("#quotedPrice"),
@@ -95,6 +97,48 @@ const elements = {
 
 function setStatus(message) {
   elements.statusText.textContent = message;
+}
+
+function normalizeSkuValues(values) {
+  const source = Array.isArray(values) ? values : [];
+  return Array.from(
+    new Set(
+      source
+        .map((value) => String(value ?? "").trim())
+        .filter(Boolean)
+    )
+  );
+}
+
+function setCurrentSkuValues(values) {
+  state.currentSkuValues = normalizeSkuValues(values);
+  renderSkuInfoBadge();
+}
+
+function renderSkuInfoBadge() {
+  if (!elements.skuInfoBadge) return;
+
+  if (!state.currentSkuValues.length) {
+    elements.skuInfoBadge.hidden = true;
+    elements.skuInfoBadge.innerHTML = "";
+    return;
+  }
+
+  const items = state.currentSkuValues
+    .map((sku) => `<span class="sku-info-tooltip-item">${escapeHtml(sku)}</span>`)
+    .join("");
+
+  elements.skuInfoBadge.hidden = false;
+  elements.skuInfoBadge.innerHTML = `
+    <span class="sku-info-pill" tabindex="0" aria-label="SKU 信息，悬停查看信息表 SKU">
+      <span class="sku-info-dot" aria-hidden="true"></span>
+      SKU信息
+      <span class="sku-info-tooltip" role="tooltip">
+        <span class="sku-info-tooltip-title">信息表 SKU</span>
+        <span class="sku-info-tooltip-list">${items}</span>
+      </span>
+    </span>
+  `;
 }
 
 function renderStorageSummary() {
@@ -162,6 +206,20 @@ function resetResults() {
 function getPositiveQuantityForBinding() {
   const quantity = parseQuantityBoundNumber(elements.quantity.value || "1");
   return quantity && quantity > 0 ? quantity : null;
+}
+
+function getPositivePageQuantity(value) {
+  const quantity = parseQuantityBoundNumber(value);
+  return quantity && quantity > 0 ? quantity : 1;
+}
+
+function multiplyNumericText(value, multiplier, decimals = 3) {
+  const number = parseQuantityBoundNumber(value);
+  const factor = getPositivePageQuantity(multiplier);
+  if (number === null) {
+    return "";
+  }
+  return formatQuantityBoundValue(number, factor, decimals);
 }
 
 function setQuantityBaseValue(fieldId, value) {
@@ -304,6 +362,7 @@ function buildProductSignature(data) {
     data?.quotedPrice || data?.quoted_price || "",
     data?.unitPrice || "",
     data?.weight || "",
+    data?.quantity || "",
     data?.goodsPrice || "",
     data?.shippingFee || "",
     data?.sent_at || ""
@@ -433,6 +492,7 @@ async function applyImportedProductCard(entry, { force = false } = {}) {
   state.lastImportedFlag = flag;
   state.lastImportedPayloadSignature = signature;
   state.lastExternalImportAt = Date.now();
+  setCurrentSkuValues(payload.sku_values || payload.skuValues);
 
   elements.name.value = payload.name || "";
   elements.skc.value = payload.skc || "";
@@ -479,13 +539,16 @@ function applyProductData(data, { force = false, source = "1688-page" } = {}) {
   }
 
   state.lastProductSignature = signature;
+  const pageQuantity = getPositivePageQuantity(data.quantity || 1);
+  let displayedWeight = "";
   if (data.unitPrice) {
     setQuantityBaseValue("unitPrice", data.unitPrice);
     elements.unitPrice.value = data.unitPrice;
   }
   if (data.weight) {
-    setQuantityBaseValue("weight", data.weight);
-    elements.weight.value = data.weight;
+    displayedWeight = multiplyNumericText(data.weight, pageQuantity, 3);
+    setQuantityBaseValue("weight", displayedWeight);
+    elements.weight.value = displayedWeight;
   }
   if (data.url) {
     elements.url.value = data.url;
@@ -497,8 +560,9 @@ function applyProductData(data, { force = false, source = "1688-page" } = {}) {
 
   calculateAndRender({ quiet: true });
   const shippingText = data.shippingFee ? `，含运费 ${data.shippingFee}` : "";
-  const weightText = data.weight ? `，重量 ${data.weight}` : "";
-  setStatus(`已抓取当前 1688 页面：单价+运费 ${data.unitPrice || "-"}${shippingText}${weightText}。`);
+  const quantityText = pageQuantity > 1 ? `，数量 ${pageQuantity}` : "";
+  const weightText = displayedWeight ? `，重量 ${displayedWeight}` : "";
+  setStatus(`已抓取当前 1688 页面：单价+运费 ${data.unitPrice || "-"}${shippingText}${quantityText}${weightText}。`);
   return true;
 }
 
@@ -622,6 +686,7 @@ function productToImportedEntry(product) {
       skc: String(product.skc || ""),
       quoted_price: String(product.quotedPrice ?? ""),
       image_url: String(product.imageUrl || ""),
+      sku_values: normalizeSkuValues(product.skuValues || product.sku_values),
       source: "t2-collection",
       sent_at: new Date().toISOString()
     }
@@ -874,6 +939,7 @@ function buildCurrentRecord() {
     imageBytes: Array.from(state.currentImage.bytes),
     imageExtension: state.currentImage.extension,
     imageMimeType: state.currentImage.mimeType,
+    skuValues: normalizeSkuValues(state.currentSkuValues),
     result,
     savedAt: new Date().toISOString()
   };
@@ -971,6 +1037,7 @@ function clearForm() {
   state.lastExternalImportAt = 0;
   state.lastImportedFlag = "";
   state.lastImportedPayloadSignature = "";
+  setCurrentSkuValues([]);
   clearQuantityBaseValues();
   clearImage();
   resetResults();

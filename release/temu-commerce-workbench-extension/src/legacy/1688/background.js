@@ -19,6 +19,7 @@ function normalizeImportedPayload(payload) {
     skc: String(payload.skc || "").trim(),
     quoted_price: String(payload.quoted_price || "").trim(),
     image_url: String(payload.image_url || "").trim(),
+    sku_values: normalizeSkuValues(payload.sku_values || payload.skuValues),
     source: String(payload.source || "t2-preview-html").trim(),
     sent_at: String(payload.sent_at || new Date().toISOString()).trim()
   };
@@ -177,3 +178,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
   return false;
 });
+
+function normalizeSkuValues(values) {
+  const source = Array.isArray(values) ? values : [];
+  return Array.from(
+    new Set(
+      source
+        .map((value) => String(value ?? "").trim())
+        .filter(Boolean)
+    )
+  );
+}

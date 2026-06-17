@@ -16,6 +16,15 @@
     return plainMatch ? plainMatch[1] : "";
   }
 
+  function parsePositiveQuantity(text) {
+    const normalized = normalizeWhitespace(text).replace(/,/g, "");
+    const match = normalized.match(/([0-9]+(?:\.[0-9]+)?)/);
+    if (!match) return "";
+
+    const value = Number(match[1]);
+    return value > 0 ? String(value) : "";
+  }
+
   function isVisible(element) {
     if (!element) return false;
     if (typeof window?.getComputedStyle !== "function") return true;
@@ -260,6 +269,39 @@
     );
   }
 
+  function findQuantity() {
+    const selectors = [
+      "#skuSelection input[role='spinbutton']",
+      "#skuSelection .ant-input-number-input",
+      "#skuSelection input[type='number']",
+      "#skuSelection input[class*='amount']",
+      "#skuSelection input[class*='quantity']",
+      ".module-od-sku-selection input[role='spinbutton']",
+      ".module-od-sku-selection .ant-input-number-input",
+      ".module-od-sku-selection input[type='number']",
+      ".module-od-sku-selection input[class*='amount']",
+      ".module-od-sku-selection input[class*='quantity']",
+      "#submitOrder input[role='spinbutton']",
+      "#submitOrder .ant-input-number-input",
+      "#submitOrder input[type='number']",
+      "input[role='spinbutton'].ant-input-number-input",
+      "input[role='spinbutton']",
+      "input[aria-label*='数量']",
+      "input[placeholder*='数量']"
+    ];
+
+    for (const selector of selectors) {
+      const inputs = Array.from(document.querySelectorAll(selector) || []);
+      for (const input of inputs) {
+        if (!isVisible(input)) continue;
+        const quantity = parsePositiveQuantity(input.getAttribute("aria-valuenow") || input.value || input.getAttribute("value"));
+        if (quantity) return quantity;
+      }
+    }
+
+    return "1";
+  }
+
   function findWeight() {
     const scriptText = getInlineContextScriptText();
 
@@ -307,6 +349,7 @@
       url: window.location.href,
       unitPrice: computeUnitPrice(goodsPrice, shippingFee),
       weight: findWeight(),
+      quantity: findQuantity(),
       goodsPrice,
       shippingFee
     };

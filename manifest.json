@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Temu 商品核价与主图工作台",
+  "name": "Temu extension",
   "version": "0.2.0",
   "description": "统一侧边栏承载原 1688 核价录入工具和 Temu GPT 主图自动化工具，原功能保持不变。",
   "permissions": [
@@ -20,12 +20,12 @@
     "<all_urls>"
   ],
   "action": {
-    "default_title": "Temu 商品工作台",
+    "default_title": "Temu extension",
     "default_icon": {
-      "16": "icons/avatar.svg",
-      "32": "icons/avatar.svg",
-      "48": "icons/avatar.svg",
-      "128": "icons/avatar.svg"
+      "16": "icons/avatar.png",
+      "32": "icons/avatar.png",
+      "48": "icons/avatar.png",
+      "128": "icons/avatar.png"
     }
   },
   "commands": {
@@ -37,10 +37,10 @@
     }
   },
   "icons": {
-    "16": "icons/avatar.svg",
-    "32": "icons/avatar.svg",
-    "48": "icons/avatar.svg",
-    "128": "icons/avatar.svg"
+    "16": "icons/avatar.png",
+    "32": "icons/avatar.png",
+    "48": "icons/avatar.png",
+    "128": "icons/avatar.png"
   },
   "background": {
     "service_worker": "src/presentation/background/background.js"

@@ -111,6 +111,113 @@ body {
   margin-bottom: 14px;
 }
 
+.card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sku-info-badge[hidden] {
+  display: none;
+}
+
+.sku-info-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 4px 10px 4px 8px;
+  border: 1px solid rgba(52, 211, 153, 0.38);
+  border-radius: 999px;
+  color: #166534;
+  background:
+    radial-gradient(circle at 14px 50%, rgba(52, 211, 153, 0.22), transparent 30px),
+    linear-gradient(135deg, rgba(220, 252, 231, 0.96), rgba(240, 253, 244, 0.74));
+  box-shadow:
+    0 8px 20px rgba(52, 211, 153, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sku-info-pill:focus {
+  outline: 2px solid rgba(52, 211, 153, 0.38);
+  outline-offset: 2px;
+}
+
+.sku-info-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #34d399;
+  box-shadow:
+    0 0 0 4px rgba(52, 211, 153, 0.16),
+    0 0 14px rgba(52, 211, 153, 0.65);
+}
+
+.sku-info-tooltip {
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 0;
+  z-index: 50;
+  width: min(230px, 70vw);
+  max-width: 260px;
+  padding: 11px;
+  border: 1px solid rgba(22, 101, 52, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 253, 247, 0.98);
+  box-shadow:
+    0 16px 36px rgba(19, 52, 39, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px) scale(0.98);
+  transform-origin: top left;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.sku-info-pill:hover .sku-info-tooltip,
+.sku-info-pill:focus .sku-info-tooltip,
+.sku-info-pill:focus-within .sku-info-tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.sku-info-tooltip-title {
+  display: block;
+  margin-bottom: 8px;
+  color: #166534;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.sku-info-tooltip-list {
+  display: grid;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(52, 211, 153, 0.55) rgba(220, 252, 231, 0.6);
+}
+
+.sku-info-tooltip-item {
+  display: block;
+  padding: 7px 8px;
+  border-radius: 8px;
+  color: #123529;
+  background: linear-gradient(135deg, rgba(220, 252, 231, 0.86), rgba(240, 253, 244, 0.72));
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .button-row {
   display: flex;
   gap: 10px;

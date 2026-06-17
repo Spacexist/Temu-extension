@@ -91,6 +91,7 @@ async function transferProduct(product, button) {
         skc: String(product.skc || ""),
         quoted_price: String(product.quotedPrice ?? ""),
         image_url: String(product.imageUrl || ""),
+        sku_values: normalizeSkuValues(product.skuValues),
         source: "t2-preview-page",
         sent_at: new Date().toISOString()
       }
