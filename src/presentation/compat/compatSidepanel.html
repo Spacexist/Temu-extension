@@ -21,7 +21,7 @@
           <span class="nav-group-label">工具</span>
           <div class="segment-control" data-group="tools">
             <button id="tabGpt" class="segment-tab" type="button" role="tab" aria-selected="false" data-panel="panelGpt">GPT</button>
-            <button id="tabDxmPrice" class="segment-tab" type="button" role="tab" aria-selected="false" data-panel="panelDxmPrice">店小秘/零售价</button>
+            <button id="tabDxmPrice" class="segment-tab" type="button" role="tab" aria-selected="false" data-panel="panelDxmPrice">后台辅助工具</button>
             <button id="tabSplit" class="segment-tab" type="button" role="tab" aria-selected="false" data-panel="panelSplit">分屏</button>
           </div>
         </div>
@@ -40,15 +40,19 @@
       </section>
 
       <section id="panelDxmPrice" class="panel combined-panel" role="tabpanel" aria-labelledby="tabDxmPrice">
-        <div class="subnav-shell" role="tablist" aria-label="店小秘与零售价工具">
+        <div class="subnav-shell" role="tablist" aria-label="后台辅助工具">
           <button class="subnav-tab is-active" type="button" data-tool="dxm">店小秘</button>
           <button class="subnav-tab" type="button" data-tool="price">零售价</button>
+          <button class="subnav-tab" type="button" data-tool="backend">合规助手</button>
         </div>
         <div class="tool-frame is-active" data-tool-frame="dxm">
           <iframe title="店小秘" src="/src/presentation/dxm/dxmTool.html"></iframe>
         </div>
         <div class="tool-frame" data-tool-frame="price">
           <iframe title="建议零售价填写" src="/src/presentation/priceFiller/priceFiller.html"></iframe>
+        </div>
+        <div class="tool-frame" data-tool-frame="backend">
+          <iframe title="后台辅助工具" src="/src/presentation/backendHelper/backendHelper.html"></iframe>
         </div>
       </section>
 

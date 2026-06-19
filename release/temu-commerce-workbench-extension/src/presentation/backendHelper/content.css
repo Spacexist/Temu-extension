@@ -1,0 +1,175 @@
+#tc65-panel {
+  position: fixed;
+  right: 18px;
+  top: 120px;
+  z-index: 2147483647;
+  width: 306px;
+  color: #0f241d;
+  background: #fffdf8;
+  border: 1px solid rgba(184, 86, 45, 0.20);
+  border-radius: 14px;
+  box-shadow: 0 18px 42px rgba(68, 43, 24, 0.22);
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+  font-size: 13px;
+}
+
+#tc65-panel.tc65-collapsed {
+  width: auto;
+}
+
+#tc65-panel * {
+  box-sizing: border-box;
+}
+
+.tc65-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 42px;
+  padding: 9px 10px 8px 12px;
+  border-bottom: 1px solid rgba(184, 86, 45, 0.16);
+  background: linear-gradient(135deg, rgba(184, 86, 45, 0.12), rgba(47, 111, 98, 0.08));
+  cursor: move;
+}
+
+.tc65-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.tc65-subtitle {
+  margin-top: 1px;
+  color: #7a654e;
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.tc65-icon-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: #7a3a1c;
+  background: #f2eadf;
+  border: 1px solid rgba(184, 86, 45, 0.18);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.tc65-icon-btn:hover {
+  background: #eadfce;
+}
+
+.tc65-body {
+  padding: 12px;
+}
+
+#tc65-panel.tc65-collapsed .tc65-body,
+#tc65-panel.tc65-collapsed .tc65-subtitle {
+  display: none;
+}
+
+.tc65-actions {
+  display: grid;
+  grid-template-columns: 1fr 74px;
+  gap: 8px;
+}
+
+.tc65-btn {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(184, 86, 45, 0.18);
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #0f241d;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tc65-btn:hover {
+  background: #f7efe3;
+}
+
+.tc65-btn-primary {
+  border-color: #b8562d;
+  background: linear-gradient(135deg, #b8562d, #9f3f1d);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.tc65-btn-primary:hover {
+  background: linear-gradient(135deg, #c26034, #9f3f1d);
+}
+
+.tc65-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.tc65-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 11px;
+  color: #355247;
+  line-height: 18px;
+}
+
+.tc65-option input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+}
+
+.tc65-select {
+  flex: 1;
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid rgba(184, 86, 45, 0.18);
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #0f241d;
+  font-size: 13px;
+}
+
+.tc65-status {
+  margin-top: 10px;
+  padding: 8px 9px;
+  border: 1px solid rgba(184, 86, 45, 0.14);
+  border-radius: 8px;
+  background: #f8f3eb;
+  color: #7a654e;
+  line-height: 18px;
+}
+
+.tc65-log {
+  height: 150px;
+  margin-top: 10px;
+  padding: 8px;
+  overflow: auto;
+  border: 1px solid rgba(47, 111, 98, 0.20);
+  border-radius: 8px;
+  background: #10251f;
+  color: #e9fff5;
+  font-family: Consolas, "Microsoft YaHei", monospace;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: pre-wrap;
+}
+
+.tc65-log-line {
+  margin-bottom: 3px;
+}
+
+.tc65-ok {
+  color: #86efac;
+}
+
+.tc65-warn {
+  color: #fde68a;
+}
+
+.tc65-error {
+  color: #fca5a5;
+}

@@ -140,6 +140,11 @@
         "src/presentation/priceFiller/priceFiller.css",
         "src/presentation/priceFiller/priceFiller.js",
         "src/presentation/priceFiller/content.js",
+        "src/presentation/backendHelper/backendHelper.html",
+        "src/presentation/backendHelper/backendHelper.css",
+        "src/presentation/backendHelper/backendHelper.js",
+        "src/presentation/backendHelper/content.js",
+        "src/presentation/backendHelper/content.css",
         "src/presentation/dxm/dxmTool.html",
         "src/presentation/dxm/dxmTool.css",
         "src/presentation/dxm/dxmTool.js"

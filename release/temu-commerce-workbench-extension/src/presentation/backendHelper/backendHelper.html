@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>后台辅助工具</title>
+    <link rel="stylesheet" href="/src/shared/theme.css">
+    <link rel="stylesheet" href="./backendHelper.css">
+  </head>
+  <body>
+    <main class="backend-helper">
+      <header class="header">
+        <h1>后台辅助工具</h1>
+        <p>合规中心批量处理：加州 65、包装信息、年龄段。所有控制都在扩展侧边栏完成。</p>
+      </header>
+
+      <section class="card">
+        <label class="config-row" for="flowMode">
+          <span>模块</span>
+          <select id="flowMode">
+            <option value="california65">加州 65</option>
+            <option value="packaging">包装信息</option>
+            <option value="age">年龄段</option>
+          </select>
+        </label>
+
+        <label class="toggle-row">
+          <input id="autoConfirm" type="checkbox">
+          <span>自动确认上传</span>
+        </label>
+
+        <div class="button-grid">
+          <button class="btn btn-primary" id="startFlow" type="button">开始处理</button>
+          <button class="btn btn-danger" id="stopFlow" type="button">停止</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="log-header">
+          <span>状态</span>
+          <span id="statusBadge">检查中</span>
+        </div>
+        <div class="status-line">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="status">正在检查当前页面...</span>
+        </div>
+        <div class="log-box" id="logBox">
+          <div class="log-line info">等待执行...</div>
+        </div>
+        <div class="hint-box">
+          执行时不会在网页里显示浮动面板；如需中断，直接点击侧边栏的停止。
+        </div>
+      </section>
+    </main>
+
+    <script src="./backendHelper.js"></script>
+  </body>
+</html>
